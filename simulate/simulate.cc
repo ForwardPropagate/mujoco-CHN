@@ -92,6 +92,86 @@ inline void Copy(T& dst, const T& src) {
   }
 }
 
+const char* TranslateUiName(const char* src) {
+  struct Pair {
+    const char* en;
+    const char* zh;
+  };
+  static constexpr Pair kTable[] = {
+    {"Constraint", "约束"},
+    {"Equality", "等式约束"},
+    {"Frictionloss", "摩擦损失"},
+    {"Limit", "限位"},
+    {"Contact", "接触"},
+    {"Spring", "弹簧"},
+    {"Damper", "阻尼"},
+    {"Gravity", "重力"},
+    {"Clampctrl", "控制钳制"},
+    {"Warmstart", "热启动"},
+    {"Filterparent", "父级过滤"},
+    {"Actuation", "驱动"},
+    {"Refsafe", "参考安全"},
+    {"Sensor", "传感器"},
+    {"Midphase", "中阶段"},
+    {"Eulerdamp", "欧拉阻尼"},
+    {"AutoReset", "自动重置"},
+    {"NativeCCD", "原生 CCD"},
+    {"Island", "孤岛"},
+    {"Override", "覆盖"},
+    {"Energy", "能量"},
+    {"Fwdinv", "正逆动力学"},
+    {"InvDiscrete", "离散逆动力学"},
+    {"MultiCCD", "多重 CCD"},
+    {"Sleep", "休眠"},
+    {"Convex Hull", "凸包"},
+    {"Texture", "纹理"},
+    {"Joint", "关节"},
+    {"Camera", "相机"},
+    {"Actuator", "执行器"},
+    {"Activation", "激活"},
+    {"Light", "光源"},
+    {"Tendon", "肌腱"},
+    {"Range Finder", "测距"},
+    {"Inertia", "惯量"},
+    {"Scale Inertia", "缩放惯量"},
+    {"Perturb Force", "扰动力"},
+    {"Perturb Object", "扰动物体"},
+    {"Contact Point", "接触点"},
+    {"Contact Force", "接触力"},
+    {"Contact Split", "接触分解"},
+    {"Transparent", "透明"},
+    {"Auto Connect", "自动连接"},
+    {"Center of Mass", "质心"},
+    {"Select Point", "选点"},
+    {"Static Body", "静态刚体"},
+    {"Skin", "皮肤"},
+    {"Flex Vert", "柔体顶点"},
+    {"Flex Edge", "柔体边"},
+    {"Flex Face", "柔体面"},
+    {"Flex Skin", "柔体皮肤"},
+    {"Body Tree", "刚体树"},
+    {"Mesh Tree", "网格树"},
+    {"SDF iters", "SDF 迭代"},
+    {"Shadow", "阴影"},
+    {"Wireframe", "线框"},
+    {"Reflection", "反射"},
+    {"Additive", "叠加"},
+    {"Skybox", "天空盒"},
+    {"Fog", "雾"},
+    {"Haze", "霾"},
+    {"Depth", "深度"},
+    {"Segment", "分割"},
+    {"Id Color", "ID 颜色"},
+    {"Cull Face", "面剔除"},
+  };
+  for (const auto& [en, zh] : kTable) {
+    if (!std::strcmp(src, en)) {
+      return zh;
+    }
+  }
+  return src;
+}
+
 //------------------------------------------- global -----------------------------------------------
 
 const double zoom_increment = 0.02;  // ratio of one click-wheel zoom increment to vertical extent
@@ -118,64 +198,64 @@ enum {
 
 // file section of UI
 const mjuiDef defFile[] = {
-  {mjITEM_SECTION,   "File",          mjPRESERVE, nullptr, "AF"},
-  {mjITEM_BUTTON,    "Save xml",      2, nullptr, ""},
-  {mjITEM_BUTTON,    "Save mjb",      2, nullptr, ""},
-  {mjITEM_BUTTON,    "Print model",   2, nullptr, "CM"},
-  {mjITEM_BUTTON,    "Print data",    2, nullptr, "CD"},
-  {mjITEM_BUTTON,    "Quit",          1, nullptr, "CQ"},
-  {mjITEM_BUTTON,    "Screenshot",    2, nullptr, "CP"},
+  {mjITEM_SECTION,   "文件",          mjPRESERVE, nullptr, "AF"},
+  {mjITEM_BUTTON,    "保存 XML",      2, nullptr, ""},
+  {mjITEM_BUTTON,    "保存 MJB",      2, nullptr, ""},
+  {mjITEM_BUTTON,    "导出模型",      2, nullptr, "CM"},
+  {mjITEM_BUTTON,    "导出数据",      2, nullptr, "CD"},
+  {mjITEM_BUTTON,    "退出",          1, nullptr, "CQ"},
+  {mjITEM_BUTTON,    "截图",          2, nullptr, "CP"},
   {mjITEM_END}
 };
 
 // help strings
 const char help_content[] =
-  "Space\n"
+  "空格\n"
   "+  -\n"
-  "Left / Right arrow\n"
+  "左 / 右方向键\n"
   "Tab / Shift-Tab\n"
   "[  ]\n"
   "Esc\n"
-  "Double-click\n"
+  "双击\n"
   "Page Up\n"
-  "Right double-click\n"
-  "Ctrl Right double-click\n"
-  "Scroll, middle drag\n"
-  "Left drag\n"
-  "[Shift] right drag\n"
-  "Ctrl [Shift] drag\n"
-  "Ctrl [Shift] right drag\n"
+  "右键双击\n"
+  "Ctrl + 右键双击\n"
+  "滚轮 / 中键拖拽\n"
+  "左键拖拽\n"
+  "[Shift] + 右键拖拽\n"
+  "Ctrl + [Shift] 拖拽\n"
+  "Ctrl + [Shift] + 右键拖拽\n"
   "F1\n"
   "F2\n"
   "F3\n"
   "F4\n"
   "F5\n"
-  "UI right-button hold\n"
-  "UI title double-click";
+  "按住 UI 右键\n"
+  "双击 UI 标题";
 
 const char help_title[] =
-  "Play / Pause\n"
-  "Speed Up / Down\n"
-  "Step Back / Forward\n"
-  "Toggle Left / Right UI\n"
-  "Cycle cameras\n"
-  "Free camera\n"
-  "Select\n"
-  "Select parent\n"
-  "Center camera\n"
-  "Tracking camera\n"
-  "Zoom\n"
-  "View Orbit\n"
-  "View Pan\n"
-  "Object Rotate\n"
-  "Object Translate\n"
-  "Help\n"
-  "Info\n"
-  "Profiler\n"
-  "Sensors\n"
-  "Full screen\n"
-  "Show UI shortcuts\n"
-  "Expand/collapse all";
+  "播放 / 暂停\n"
+  "加速 / 减速\n"
+  "后退一步 / 前进一步\n"
+  "切换左/右 UI\n"
+  "切换相机\n"
+  "自由相机\n"
+  "选择\n"
+  "选择父对象\n"
+  "相机居中\n"
+  "跟踪相机\n"
+  "缩放\n"
+  "视角旋转\n"
+  "视角平移\n"
+  "物体旋转\n"
+  "物体平移\n"
+  "帮助\n"
+  "信息\n"
+  "性能分析\n"
+  "传感器\n"
+  "全屏\n"
+  "显示 UI 快捷键\n"
+  "全部展开/折叠";
 
 
 //-------------------------------- profiler, sensor, info, watch -----------------------------------
@@ -193,16 +273,16 @@ void InitializeProfiler(mj::Simulate* sim) {
   mjv_defaultFigure(&sim->figsize);
 
   // titles
-  mju::strcpy_arr(sim->figconstraint.title, "Counts");
-  mju::strcpy_arr(sim->figcost.title, "Convergence (log 10)");
-  mju::strcpy_arr(sim->figsize.title, "Dimensions");
-  mju::strcpy_arr(sim->figtimer.title, "CPU time (msec)");
+  mju::strcpy_arr(sim->figconstraint.title, "计数");
+  mju::strcpy_arr(sim->figcost.title, "收敛性 (log10)");
+  mju::strcpy_arr(sim->figsize.title, "维度");
+  mju::strcpy_arr(sim->figtimer.title, "CPU 时间 (毫秒)");
 
   // x-labels
-  mju::strcpy_arr(sim->figconstraint.xlabel, "Solver iteration");
-  mju::strcpy_arr(sim->figcost.xlabel, "Solver iteration");
-  mju::strcpy_arr(sim->figsize.xlabel, "Video frame");
-  mju::strcpy_arr(sim->figtimer.xlabel, "Video frame");
+  mju::strcpy_arr(sim->figconstraint.xlabel, "求解器迭代");
+  mju::strcpy_arr(sim->figcost.xlabel, "求解器迭代");
+  mju::strcpy_arr(sim->figsize.xlabel, "视频帧");
+  mju::strcpy_arr(sim->figtimer.xlabel, "视频帧");
 
   // y-tick number formats
   mju::strcpy_arr(sim->figconstraint.yformat, "%.0f");
@@ -235,25 +315,25 @@ void InitializeProfiler(mj::Simulate* sim) {
   }
 
   // legends
-  mju::strcpy_arr(sim->figconstraint.linename[0], "total");
-  mju::strcpy_arr(sim->figconstraint.linename[1], "active");
-  mju::strcpy_arr(sim->figconstraint.linename[2], "changed");
-  mju::strcpy_arr(sim->figconstraint.linename[3], "evals");
-  mju::strcpy_arr(sim->figconstraint.linename[4], "updates");
-  mju::strcpy_arr(sim->figcost.linename[0], "improvement");
-  mju::strcpy_arr(sim->figcost.linename[1], "gradient");
-  mju::strcpy_arr(sim->figcost.linename[2], "lineslope");
-  mju::strcpy_arr(sim->figsize.linename[0], "dof");
-  mju::strcpy_arr(sim->figsize.linename[1], "body");
-  mju::strcpy_arr(sim->figsize.linename[2], "constraint");
+  mju::strcpy_arr(sim->figconstraint.linename[0], "总数");
+  mju::strcpy_arr(sim->figconstraint.linename[1], "活跃");
+  mju::strcpy_arr(sim->figconstraint.linename[2], "变化");
+  mju::strcpy_arr(sim->figconstraint.linename[3], "评估");
+  mju::strcpy_arr(sim->figconstraint.linename[4], "更新");
+  mju::strcpy_arr(sim->figcost.linename[0], "改进");
+  mju::strcpy_arr(sim->figcost.linename[1], "梯度");
+  mju::strcpy_arr(sim->figcost.linename[2], "线斜率");
+  mju::strcpy_arr(sim->figsize.linename[0], "自由度");
+  mju::strcpy_arr(sim->figsize.linename[1], "刚体");
+  mju::strcpy_arr(sim->figsize.linename[2], "约束");
   mju::strcpy_arr(sim->figsize.linename[3], "sqrt(nnz)");
-  mju::strcpy_arr(sim->figsize.linename[4], "contact");
-  mju::strcpy_arr(sim->figsize.linename[5], "iteration");
-  mju::strcpy_arr(sim->figtimer.linename[0], "total");
-  mju::strcpy_arr(sim->figtimer.linename[1], "collision");
-  mju::strcpy_arr(sim->figtimer.linename[2], "prepare");
-  mju::strcpy_arr(sim->figtimer.linename[3], "solve");
-  mju::strcpy_arr(sim->figtimer.linename[4], "other");
+  mju::strcpy_arr(sim->figsize.linename[4], "接触");
+  mju::strcpy_arr(sim->figsize.linename[5], "迭代");
+  mju::strcpy_arr(sim->figtimer.linename[0], "总计");
+  mju::strcpy_arr(sim->figtimer.linename[1], "碰撞");
+  mju::strcpy_arr(sim->figtimer.linename[2], "准备");
+  mju::strcpy_arr(sim->figtimer.linename[3], "求解");
+  mju::strcpy_arr(sim->figtimer.linename[4], "其他");
 
   // grid sizes
   sim->figconstraint.gridsize[0] = 5;
@@ -466,7 +546,7 @@ void InitializeSensor(mj::Simulate* sim) {
   figsensor.flg_symmetric = 1;
 
   // title
-  mju::strcpy_arr(figsensor.title, "Sensor data");
+  mju::strcpy_arr(figsensor.title, "传感器数据");
 
   // y-tick number format
   mju::strcpy_arr(figsensor.yformat, "%.1f");
@@ -725,7 +805,7 @@ void UpdateInfoText(mj::Simulate* sim, const mjModel* m, const mjData* d,
   }
 
   // prepare info text
-  mju::strcpy_arr(title, "Time\nSize\nCPU\nSolver   \nFPS\nMemory");
+  mju::strcpy_arr(title, "时间\n规模\nCPU\n求解器\nFPS\n内存");
   mju::sprintf_arr(content,
                    "%-9.3f\n%d  (%d con)\n%.3f\n%.1f  (%d it)\n%s\n%.1f%% of %s",
                    d->time,
@@ -743,7 +823,7 @@ void UpdateInfoText(mj::Simulate* sim, const mjModel* m, const mjData* d,
     if (mjENABLED(mjENBL_ENERGY)) {
       mju::sprintf_arr(tmp, "\n%.3f", d->energy[0]+d->energy[1]);
       mju::strcat_arr(content, tmp);
-      mju::strcat_arr(title, "\nEnergy");
+      mju::strcat_arr(title, "\n能量");
     }
 
     // add FwdInv if enabled
@@ -752,14 +832,14 @@ void UpdateInfoText(mj::Simulate* sim, const mjModel* m, const mjData* d,
                        mju_log10(mju_max(mjMINVAL, d->solver_fwdinv[0])),
                        mju_log10(mju_max(mjMINVAL, d->solver_fwdinv[1])));
       mju::strcat_arr(content, tmp);
-      mju::strcat_arr(title, "\nFwdInv");
+      mju::strcat_arr(title, "\n正逆动力学");
     }
 
     // add islands if enabled
     if (!mjDISABLED(mjDSBL_ISLAND) && d->nisland > 0) {
       mju::sprintf_arr(tmp, "\n%d", d->nisland);
       mju::strcat_arr(content, tmp);
-      mju::strcat_arr(title, "\nIslands");
+      mju::strcat_arr(title, "\n孤岛");
     }
   }
 }
@@ -773,7 +853,7 @@ void PrintField(char (&str)[mjMAXUINAME], void* ptr) {
 void UpdateWatch(mj::Simulate* sim, const mjModel* m, const mjData* d) {
   // clear
   sim->ui0.sect[SECT_WATCH].item[2].multi.nelem = 1;
-  mju::strcpy_arr(sim->ui0.sect[SECT_WATCH].item[2].multi.name[0], "invalid field");
+  mju::strcpy_arr(sim->ui0.sect[SECT_WATCH].item[2].multi.name[0], "字段无效");
 
   // find specified field in mjData arrays, update value
   #define X(TYPE, NAME, NR, NC)                                                                  \
@@ -782,7 +862,7 @@ void UpdateWatch(mj::Simulate* sim, const mjModel* m, const mjData* d) {
       if (sim->index >= 0 && sim->index < m->NR * NC) {                                          \
         PrintField(sim->ui0.sect[SECT_WATCH].item[2].multi.name[0], d->NAME + sim->index);       \
       } else {                                                                                   \
-        mju::strcpy_arr(sim->ui0.sect[SECT_WATCH].item[2].multi.name[0], "invalid index");       \
+        mju::strcpy_arr(sim->ui0.sect[SECT_WATCH].item[2].multi.name[0], "索引无效");             \
       }                                                                                          \
       return;                                                                                    \
     }
@@ -798,54 +878,54 @@ void UpdateWatch(mj::Simulate* sim, const mjModel* m, const mjData* d) {
 void MakePhysicsSection(mj::Simulate* sim) {
   mjOption* opt = sim->is_passive_ ? &sim->m_passive_->opt : &sim->m_->opt;
   mjuiDef defPhysics[] = {
-    {mjITEM_SECTION,   "Physics",       mjPRESERVE, nullptr,          "AP"},
-    {mjITEM_SELECT,    "Integrator",    2, &(opt->integrator),        "Euler\nRK4\nimplicit\nimplicitfast"},
-    {mjITEM_SELECT,    "Cone",          2, &(opt->cone),              "Pyramidal\nElliptic"},
-    {mjITEM_SELECT,    "Jacobian",      2, &(opt->jacobian),          "Dense\nSparse\nAuto"},
-    {mjITEM_SELECT,    "Solver",        2, &(opt->solver),            "PGS\nCG\nNewton"},
-    {mjITEM_SEPARATOR, "Algorithmic Parameters", mjPRESERVE},
-    {mjITEM_EDITNUM,   "Timestep",      2, &(opt->timestep),          "1 0 1"},
-    {mjITEM_EDITINT,   "Iterations",    2, &(opt->iterations),        "1 0 1000"},
-    {mjITEM_EDITNUM,   "Tolerance",     2, &(opt->tolerance),         "1 0 1"},
-    {mjITEM_EDITINT,   "LS Iter",       2, &(opt->ls_iterations),     "1 0 100"},
-    {mjITEM_EDITNUM,   "LS Tol",        2, &(opt->ls_tolerance),      "1 0 0.1"},
-    {mjITEM_EDITINT,   "Noslip Iter",   2, &(opt->noslip_iterations), "1 0 1000"},
-    {mjITEM_EDITNUM,   "Noslip Tol",    2, &(opt->noslip_tolerance),  "1 0 1"},
-    {mjITEM_EDITINT,   "CCD Iter",      2, &(opt->ccd_iterations),    "1 0 1000"},
-    {mjITEM_EDITNUM,   "CCD Tol",       2, &(opt->ccd_tolerance),     "1 0 1"},
-    {mjITEM_EDITNUM,   "Sleep Tol",     2, &(opt->sleep_tolerance),   "1 0 1"},
-    {mjITEM_EDITINT,   "SDF Iter",      2, &(opt->sdf_iterations),    "1 1 20"},
-    {mjITEM_EDITINT,   "SDF Init",      2, &(opt->sdf_initpoints),    "1 1 100"},
-    {mjITEM_SEPARATOR, "Physical Parameters", mjPRESERVE},
-    {mjITEM_EDITNUM,   "Gravity",       2, opt->gravity,              "3"},
-    {mjITEM_EDITNUM,   "Wind",          2, opt->wind,                 "3"},
-    {mjITEM_EDITNUM,   "Magnetic",      2, opt->magnetic,             "3"},
-    {mjITEM_EDITNUM,   "Density",       2, &(opt->density),           "1"},
-    {mjITEM_EDITNUM,   "Viscosity",     2, &(opt->viscosity),         "1"},
-    {mjITEM_EDITNUM,   "Imp Ratio",     2, &(opt->impratio),          "1"},
-    {mjITEM_SEPARATOR, "Disable Flags", mjPRESERVE},
+    {mjITEM_SECTION,   "物理",          mjPRESERVE, nullptr,          "AP"},
+    {mjITEM_SELECT,    "积分器",        2, &(opt->integrator),        "欧拉\nRK4\n隐式\n快速隐式"},
+    {mjITEM_SELECT,    "摩擦锥",        2, &(opt->cone),              "棱锥\n椭圆"},
+    {mjITEM_SELECT,    "雅可比",        2, &(opt->jacobian),          "稠密\n稀疏\n自动"},
+    {mjITEM_SELECT,    "求解器",        2, &(opt->solver),            "PGS\nCG\n牛顿"},
+    {mjITEM_SEPARATOR, "算法参数",      mjPRESERVE},
+    {mjITEM_EDITNUM,   "时间步长",      2, &(opt->timestep),          "1 0 1"},
+    {mjITEM_EDITINT,   "迭代次数",      2, &(opt->iterations),        "1 0 1000"},
+    {mjITEM_EDITNUM,   "容差",          2, &(opt->tolerance),         "1 0 1"},
+    {mjITEM_EDITINT,   "线搜索迭代",    2, &(opt->ls_iterations),     "1 0 100"},
+    {mjITEM_EDITNUM,   "线搜索容差",    2, &(opt->ls_tolerance),      "1 0 0.1"},
+    {mjITEM_EDITINT,   "无滑移迭代",    2, &(opt->noslip_iterations), "1 0 1000"},
+    {mjITEM_EDITNUM,   "无滑移容差",    2, &(opt->noslip_tolerance),  "1 0 1"},
+    {mjITEM_EDITINT,   "CCD 迭代",      2, &(opt->ccd_iterations),    "1 0 1000"},
+    {mjITEM_EDITNUM,   "CCD 容差",      2, &(opt->ccd_tolerance),     "1 0 1"},
+    {mjITEM_EDITNUM,   "休眠容差",      2, &(opt->sleep_tolerance),   "1 0 1"},
+    {mjITEM_EDITINT,   "SDF 迭代",      2, &(opt->sdf_iterations),    "1 1 20"},
+    {mjITEM_EDITINT,   "SDF 初始点",    2, &(opt->sdf_initpoints),    "1 1 100"},
+    {mjITEM_SEPARATOR, "物理参数",      mjPRESERVE},
+    {mjITEM_EDITNUM,   "重力",          2, opt->gravity,              "3"},
+    {mjITEM_EDITNUM,   "风",            2, opt->wind,                 "3"},
+    {mjITEM_EDITNUM,   "磁场",          2, opt->magnetic,             "3"},
+    {mjITEM_EDITNUM,   "密度",          2, &(opt->density),           "1"},
+    {mjITEM_EDITNUM,   "粘度",          2, &(opt->viscosity),         "1"},
+    {mjITEM_EDITNUM,   "阻抗比",        2, &(opt->impratio),          "1"},
+    {mjITEM_SEPARATOR, "禁用标志",      mjPRESERVE},
     {mjITEM_END}
   };
   mjuiDef defEnableFlags[] = {
-    {mjITEM_SEPARATOR, "Enable Flags", mjPRESERVE},
+    {mjITEM_SEPARATOR, "启用标志", mjPRESERVE},
     {mjITEM_END}
   };
   mjuiDef defOverride[] = {
-    {mjITEM_SEPARATOR, "Contact Override", mjPRESERVE},
-    {mjITEM_EDITNUM,   "Margin",        2, &(opt->o_margin),          "1"},
-    {mjITEM_EDITNUM,   "Sol Imp",       2, &(opt->o_solimp),          "5"},
-    {mjITEM_EDITNUM,   "Sol Ref",       2, &(opt->o_solref),          "2"},
-    {mjITEM_EDITNUM,   "Friction",      2, &(opt->o_friction),        "5"},
+    {mjITEM_SEPARATOR, "接触参数覆盖",  mjPRESERVE},
+    {mjITEM_EDITNUM,   "边距",          2, &(opt->o_margin),          "1"},
+    {mjITEM_EDITNUM,   "求解阻抗",      2, &(opt->o_solimp),          "5"},
+    {mjITEM_EDITNUM,   "求解参考",      2, &(opt->o_solref),          "2"},
+    {mjITEM_EDITNUM,   "摩擦",          2, &(opt->o_friction),        "5"},
     {mjITEM_END}
   };
   mjuiDef defDisableActuator[] = {
-    {mjITEM_SEPARATOR, "Actuator Group Enable", mjPRESERVE},
-    {mjITEM_CHECKBYTE,  "Act Group 0",  2, sim->enableactuator+0,     ""},
-    {mjITEM_CHECKBYTE,  "Act Group 1",  2, sim->enableactuator+1,     ""},
-    {mjITEM_CHECKBYTE,  "Act Group 2",  2, sim->enableactuator+2,     ""},
-    {mjITEM_CHECKBYTE,  "Act Group 3",  2, sim->enableactuator+3,     ""},
-    {mjITEM_CHECKBYTE,  "Act Group 4",  2, sim->enableactuator+4,     ""},
-    {mjITEM_CHECKBYTE,  "Act Group 5",  2, sim->enableactuator+5,     ""},
+    {mjITEM_SEPARATOR, "执行器组启用",  mjPRESERVE},
+    {mjITEM_CHECKBYTE,  "执行器组 0",    2, sim->enableactuator+0,     ""},
+    {mjITEM_CHECKBYTE,  "执行器组 1",    2, sim->enableactuator+1,     ""},
+    {mjITEM_CHECKBYTE,  "执行器组 2",    2, sim->enableactuator+2,     ""},
+    {mjITEM_CHECKBYTE,  "执行器组 3",    2, sim->enableactuator+3,     ""},
+    {mjITEM_CHECKBYTE,  "执行器组 4",    2, sim->enableactuator+4,     ""},
+    {mjITEM_CHECKBYTE,  "执行器组 5",    2, sim->enableactuator+5,     ""},
     {mjITEM_END}
   };
 
@@ -858,13 +938,13 @@ void MakePhysicsSection(mj::Simulate* sim) {
     {mjITEM_END}
   };
   for (int i=0; i<mjNDISABLE; i++) {
-    mju::strcpy_arr(defFlag[0].name, mjDISABLESTRING[i]);
+    mju::strcpy_arr(defFlag[0].name, TranslateUiName(mjDISABLESTRING[i]));
     defFlag[0].pdata = sim->disable + i;
     mjui_add(&sim->ui0, defFlag);
   }
   mjui_add(&sim->ui0, defEnableFlags);
   for (int i=0; i<mjNENABLE; i++) {
-    mju::strcpy_arr(defFlag[0].name, mjENABLESTRING[i]);
+    mju::strcpy_arr(defFlag[0].name, TranslateUiName(mjENABLESTRING[i]));
     defFlag[0].pdata = sim->enable + i;
     mjui_add(&sim->ui0, defFlag);
   }
@@ -880,9 +960,9 @@ void MakePhysicsSection(mj::Simulate* sim) {
 
     // close less useful subsections
     if (it->type == mjITEM_SEPARATOR) {
-      if (mju::strcmp_arr(it->name, "Actuator Group Enable") &&
-          mju::strcmp_arr(it->name, "Contact Override")  &&
-          mju::strcmp_arr(it->name, "Physical Parameters")) {
+      if (mju::strcmp_arr(it->name, "执行器组启用") &&
+          mju::strcmp_arr(it->name, "接触参数覆盖")  &&
+          mju::strcmp_arr(it->name, "物理参数")) {
         it->state = mjSEPCLOSED+1;
       }
     }
@@ -894,21 +974,21 @@ void MakePhysicsSection(mj::Simulate* sim) {
 // make rendering section of UI
 void MakeRenderingSection(mj::Simulate* sim, const mjModel* m) {
   mjuiDef defRendering[] = {
-    {mjITEM_SECTION, "Rendering", mjPRESERVE, nullptr, "AR"},
-    {mjITEM_SELECT, "Camera", 2, &(sim->camera), "Free\nTracking"},
-    {mjITEM_SELECT, "Label", 2, &(sim->opt.label),
-      "None\nBody\nJoint\nGeom\nSite\nCamera\nLight\nTendon\n"
-      "Actuator\nConstraint\nFlex\nSkin\nSelection\nSel Pnt\nContact\nForce\nIsland"
+    {mjITEM_SECTION, "渲染", mjPRESERVE, nullptr, "AR"},
+    {mjITEM_SELECT, "相机", 2, &(sim->camera), "自由\n跟踪"},
+    {mjITEM_SELECT, "标签", 2, &(sim->opt.label),
+      "无\n刚体\n关节\n几何体\n位点\n相机\n光源\n肌腱\n"
+      "执行器\n约束\n柔体\n皮肤\n选中\n选点\n接触\n力\n孤岛"
     },
-    {mjITEM_SELECT, "Frame", 2, &(sim->opt.frame),
-      "None\nBody\nGeom\nSite\nCamera\nLight\nContact\nWorld"
+    {mjITEM_SELECT, "坐标系", 2, &(sim->opt.frame),
+      "无\n刚体\n几何体\n位点\n相机\n光源\n接触\n世界"
     },
-    {mjITEM_BUTTON, "Copy camera", 2, nullptr, ""},
-    {mjITEM_SEPARATOR, "Model Elements", 1},
+    {mjITEM_BUTTON, "复制相机", 2, nullptr, ""},
+    {mjITEM_SEPARATOR, "模型元素", 1},
     {mjITEM_END}
   };
   mjuiDef defOpenGL[] = {
-    {mjITEM_SEPARATOR, "OpenGL Effects", 1},
+    {mjITEM_SEPARATOR, "OpenGL 效果", 1},
     {mjITEM_END}
   };
 
@@ -919,7 +999,7 @@ void MakeRenderingSection(mj::Simulate* sim, const mjModel* m) {
     if (m->names[m->name_camadr[i]]) {
       mju::strcat_arr(camname, m->names+m->name_camadr[i]);
     } else {
-      mju::sprintf_arr(camname, "\nCamera %d", i);
+      mju::sprintf_arr(camname, "\n相机 %d", i);
     }
 
     // check string length
@@ -941,7 +1021,7 @@ void MakeRenderingSection(mj::Simulate* sim, const mjModel* m) {
   };
   for (int i=0; i<mjNVISFLAG; i++) {
     // set name
-    mju::strcpy_arr(defFlag[0].name, mjVISSTRING[i][0]);
+    mju::strcpy_arr(defFlag[0].name, TranslateUiName(mjVISSTRING[i][0]));
 
     // set shortcut and data
     if (mjVISSTRING[i][2][0]) {
@@ -955,24 +1035,24 @@ void MakeRenderingSection(mj::Simulate* sim, const mjModel* m) {
 
   // create tree slider
   mjuiDef defTree[] = {
-      {mjITEM_SLIDERINT, "Tree depth", 2, &sim->opt.bvh_depth, "0 20"},
-      {mjITEM_SLIDERINT, "Flex layer", 2, &sim->opt.flex_layer, "0 10"},
+      {mjITEM_SLIDERINT, "树深度", 2, &sim->opt.bvh_depth, "0 20"},
+      {mjITEM_SLIDERINT, "柔体层", 2, &sim->opt.flex_layer, "0 10"},
       {mjITEM_END}
   };
   mjui_add(&sim->ui0, defTree);
 
   // add image sensor selector if image sensors exist
   if (sim->image_sensor_count > 0) {
-    // build options string: "All\nSensor1\nSensor2\n..."
+    // build options string: "全部\n传感器1\n传感器2\n..."
     static char sensor_options[mjMAXUITEXT];
-    mju::strcpy_arr(sensor_options, "All");
+    mju::strcpy_arr(sensor_options, "全部");
     for (int i = 0; i < sim->image_sensor_count && i < mjMAXUIMULTI - 1; i++) {
       mju::strcat_arr(sensor_options, "\n");
       if ((int)sim->image_sensor_names[i].length() < mjMAXUINAME) {
         mju::strcat_arr(sensor_options, sim->image_sensor_names[i].c_str());
       } else {
         char truncated[mjMAXUINAME];
-        snprintf(truncated, mjMAXUINAME, "Image %d", i);
+        snprintf(truncated, mjMAXUINAME, "图像 %d", i);
         mju::strcat_arr(sensor_options, truncated);
       }
     }
@@ -982,7 +1062,7 @@ void MakeRenderingSection(mj::Simulate* sim, const mjModel* m) {
     sim->image_sensor_ui_selection = sim->selected_image_sensor + 1;
 
     mjuiDef defImageSensor[] = {
-        {mjITEM_SELECT, "Sensor", 2, &sim->image_sensor_ui_selection, ""},
+        {mjITEM_SELECT, "传感器", 2, &sim->image_sensor_ui_selection, ""},
         {mjITEM_END}
     };
     // copy options string into the struct's other field
@@ -994,7 +1074,7 @@ void MakeRenderingSection(mj::Simulate* sim, const mjModel* m) {
   mjui_add(&sim->ui0, defOpenGL);
   for (int i=0; i<mjNRNDFLAG; i++) {
     // set name
-    mju::strcpy_arr(defFlag[0].name, mjRNDSTRING[i][0]);
+    mju::strcpy_arr(defFlag[0].name, TranslateUiName(mjRNDSTRING[i][0]));
 
     // set shortcut and data
     if (mjRNDSTRING[i][2][0]) {
@@ -1013,80 +1093,80 @@ void MakeVisualizationSection(mj::Simulate* sim, const mjModel* m) {
   mjVisual* vis = sim->is_passive_ ? &sim->m_passive_->vis : &sim->m_->vis;
 
   mjuiDef defVisualization[] = {
-    {mjITEM_SECTION,   "Visualization", mjPRESERVE, nullptr, "AV"},
-    {mjITEM_SEPARATOR, "Headlight",  1},
-    {mjITEM_RADIO,     "Active",          2, &(vis->headlight.active),     "Off\nOn"},
-    {mjITEM_EDITFLOAT, "Ambient",         2, &(vis->headlight.ambient),    "3"},
-    {mjITEM_EDITFLOAT, "Diffuse",         2, &(vis->headlight.diffuse),    "3"},
-    {mjITEM_EDITFLOAT, "Specular",        2, &(vis->headlight.specular),   "3"},
-    {mjITEM_SEPARATOR, "Free Camera", 1},
-    {mjITEM_RADIO,     "Orthographic",    2, &(vis->global.orthographic),  "No\nYes"},
-    {mjITEM_EDITFLOAT, "Field of view",   2, &(vis->global.fovy),          "1"},
-    {mjITEM_EDITNUM,   "Center",          2, &(stat->center),              "3"},
-    {mjITEM_EDITFLOAT, "Azimuth",         2, &(vis->global.azimuth),       "1"},
-    {mjITEM_EDITFLOAT, "Elevation",       2, &(vis->global.elevation),     "1"},
-    {mjITEM_BUTTON,    "Align",           2, nullptr,                      "CA"},
-    {mjITEM_SEPARATOR, "Global",  1},
-    {mjITEM_EDITNUM,   "Extent",          2, &(stat->extent),              "1"},
-    {mjITEM_RADIO,     "Inertia",         2, &(vis->global.ellipsoidinertia), "Box\nEllipsoid"},
-    {mjITEM_RADIO,     "BVH active",      5, &(vis->global.bvactive), "False\nTrue"},
-    {mjITEM_SEPARATOR, "Map",  1},
-    {mjITEM_EDITFLOAT, "Stiffness",       2, &(vis->map.stiffness),        "1"},
-    {mjITEM_EDITFLOAT, "Rot stiffness",   2, &(vis->map.stiffnessrot),     "1"},
-    {mjITEM_EDITFLOAT, "Force",           2, &(vis->map.force),            "1"},
-    {mjITEM_EDITFLOAT, "Torque",          2, &(vis->map.torque),           "1"},
-    {mjITEM_EDITFLOAT, "Alpha",           2, &(vis->map.alpha),            "1"},
-    {mjITEM_EDITFLOAT, "Fog start",       2, &(vis->map.fogstart),         "1"},
-    {mjITEM_EDITFLOAT, "Fog end",         2, &(vis->map.fogend),           "1"},
-    {mjITEM_EDITFLOAT, "Z near",          2, &(vis->map.znear),            "1"},
-    {mjITEM_EDITFLOAT, "Z far",           2, &(vis->map.zfar),             "1"},
-    {mjITEM_EDITFLOAT, "Haze",            2, &(vis->map.haze),             "1"},
-    {mjITEM_EDITFLOAT, "Shadow clip",     2, &(vis->map.shadowclip),       "1"},
-    {mjITEM_EDITFLOAT, "Shadow scale",    2, &(vis->map.shadowscale),      "1"},
-    {mjITEM_SEPARATOR, "Scale", mjPRESERVE},
-    {mjITEM_EDITNUM,   "All (meansize)",  2, &(stat->meansize),            "1"},
-    {mjITEM_EDITFLOAT, "Force width",     2, &(vis->scale.forcewidth),     "1"},
-    {mjITEM_EDITFLOAT, "Contact width",   2, &(vis->scale.contactwidth),   "1"},
-    {mjITEM_EDITFLOAT, "Contact height",  2, &(vis->scale.contactheight),  "1"},
-    {mjITEM_EDITFLOAT, "Connect",         2, &(vis->scale.connect),        "1"},
-    {mjITEM_EDITFLOAT, "Com",             2, &(vis->scale.com),            "1"},
-    {mjITEM_EDITFLOAT, "Camera",          2, &(vis->scale.camera),         "1"},
-    {mjITEM_EDITFLOAT, "Light",           2, &(vis->scale.light),          "1"},
-    {mjITEM_EDITFLOAT, "Select point",    2, &(vis->scale.selectpoint),    "1"},
-    {mjITEM_EDITFLOAT, "Joint length",    2, &(vis->scale.jointlength),    "1"},
-    {mjITEM_EDITFLOAT, "Joint width",     2, &(vis->scale.jointwidth),     "1"},
-    {mjITEM_EDITFLOAT, "Actuator length", 2, &(vis->scale.actuatorlength), "1"},
-    {mjITEM_EDITFLOAT, "Actuator width",  2, &(vis->scale.actuatorwidth),  "1"},
-    {mjITEM_EDITFLOAT, "Frame length",    2, &(vis->scale.framelength),    "1"},
-    {mjITEM_EDITFLOAT, "Frame width",     2, &(vis->scale.framewidth),     "1"},
-    {mjITEM_EDITFLOAT, "Constraint",      2, &(vis->scale.constraint),     "1"},
-    {mjITEM_EDITFLOAT, "Slider-crank",    2, &(vis->scale.slidercrank),    "1"},
+    {mjITEM_SECTION,   "可视化", mjPRESERVE, nullptr, "AV"},
+    {mjITEM_SEPARATOR, "头灯",  1},
+    {mjITEM_RADIO,     "启用",          2, &(vis->headlight.active),     "关闭\n开启"},
+    {mjITEM_EDITFLOAT, "环境光",        2, &(vis->headlight.ambient),    "3"},
+    {mjITEM_EDITFLOAT, "漫反射",        2, &(vis->headlight.diffuse),    "3"},
+    {mjITEM_EDITFLOAT, "镜面反射",      2, &(vis->headlight.specular),   "3"},
+    {mjITEM_SEPARATOR, "自由相机", 1},
+    {mjITEM_RADIO,     "正交投影",      2, &(vis->global.orthographic),  "否\n是"},
+    {mjITEM_EDITFLOAT, "视野角",        2, &(vis->global.fovy),          "1"},
+    {mjITEM_EDITNUM,   "中心",          2, &(stat->center),              "3"},
+    {mjITEM_EDITFLOAT, "方位角",        2, &(vis->global.azimuth),       "1"},
+    {mjITEM_EDITFLOAT, "俯仰角",        2, &(vis->global.elevation),     "1"},
+    {mjITEM_BUTTON,    "对齐",          2, nullptr,                      "CA"},
+    {mjITEM_SEPARATOR, "全局",  1},
+    {mjITEM_EDITNUM,   "范围",          2, &(stat->extent),              "1"},
+    {mjITEM_RADIO,     "惯量显示",      2, &(vis->global.ellipsoidinertia), "盒体\n椭球"},
+    {mjITEM_RADIO,     "BVH 启用",      5, &(vis->global.bvactive), "否\n是"},
+    {mjITEM_SEPARATOR, "映射",  1},
+    {mjITEM_EDITFLOAT, "刚度",           2, &(vis->map.stiffness),        "1"},
+    {mjITEM_EDITFLOAT, "旋转刚度",       2, &(vis->map.stiffnessrot),     "1"},
+    {mjITEM_EDITFLOAT, "力",             2, &(vis->map.force),            "1"},
+    {mjITEM_EDITFLOAT, "力矩",           2, &(vis->map.torque),           "1"},
+    {mjITEM_EDITFLOAT, "透明度",         2, &(vis->map.alpha),            "1"},
+    {mjITEM_EDITFLOAT, "雾起始",         2, &(vis->map.fogstart),         "1"},
+    {mjITEM_EDITFLOAT, "雾结束",         2, &(vis->map.fogend),           "1"},
+    {mjITEM_EDITFLOAT, "近裁剪面",       2, &(vis->map.znear),            "1"},
+    {mjITEM_EDITFLOAT, "远裁剪面",       2, &(vis->map.zfar),             "1"},
+    {mjITEM_EDITFLOAT, "霾度",           2, &(vis->map.haze),             "1"},
+    {mjITEM_EDITFLOAT, "阴影裁剪",       2, &(vis->map.shadowclip),       "1"},
+    {mjITEM_EDITFLOAT, "阴影缩放",       2, &(vis->map.shadowscale),      "1"},
+    {mjITEM_SEPARATOR, "缩放", mjPRESERVE},
+    {mjITEM_EDITNUM,   "全局 (均值)",    2, &(stat->meansize),            "1"},
+    {mjITEM_EDITFLOAT, "力宽度",         2, &(vis->scale.forcewidth),     "1"},
+    {mjITEM_EDITFLOAT, "接触宽度",       2, &(vis->scale.contactwidth),   "1"},
+    {mjITEM_EDITFLOAT, "接触高度",       2, &(vis->scale.contactheight),  "1"},
+    {mjITEM_EDITFLOAT, "连线",           2, &(vis->scale.connect),        "1"},
+    {mjITEM_EDITFLOAT, "质心",           2, &(vis->scale.com),            "1"},
+    {mjITEM_EDITFLOAT, "相机",           2, &(vis->scale.camera),         "1"},
+    {mjITEM_EDITFLOAT, "光源",           2, &(vis->scale.light),          "1"},
+    {mjITEM_EDITFLOAT, "选点",           2, &(vis->scale.selectpoint),    "1"},
+    {mjITEM_EDITFLOAT, "关节长度",       2, &(vis->scale.jointlength),    "1"},
+    {mjITEM_EDITFLOAT, "关节宽度",       2, &(vis->scale.jointwidth),     "1"},
+    {mjITEM_EDITFLOAT, "执行器长度",     2, &(vis->scale.actuatorlength), "1"},
+    {mjITEM_EDITFLOAT, "执行器宽度",     2, &(vis->scale.actuatorwidth),  "1"},
+    {mjITEM_EDITFLOAT, "坐标轴长度",     2, &(vis->scale.framelength),    "1"},
+    {mjITEM_EDITFLOAT, "坐标轴宽度",     2, &(vis->scale.framewidth),     "1"},
+    {mjITEM_EDITFLOAT, "约束",           2, &(vis->scale.constraint),     "1"},
+    {mjITEM_EDITFLOAT, "曲柄滑块",       2, &(vis->scale.slidercrank),    "1"},
     {mjITEM_SEPARATOR, "RGBA", mjPRESERVE},
-    {mjITEM_EDITFLOAT, "fog",             2, &(vis->rgba.fog),              "4"},
-    {mjITEM_EDITFLOAT, "haze",            2, &(vis->rgba.haze),             "4"},
-    {mjITEM_EDITFLOAT, "force",           2, &(vis->rgba.force),            "4"},
-    {mjITEM_EDITFLOAT, "inertia",         2, &(vis->rgba.inertia),          "4"},
-    {mjITEM_EDITFLOAT, "joint",           2, &(vis->rgba.joint),            "4"},
-    {mjITEM_EDITFLOAT, "actuator",        2, &(vis->rgba.actuator),         "4"},
-    {mjITEM_EDITFLOAT, "actnegative",     2, &(vis->rgba.actuatornegative), "4"},
-    {mjITEM_EDITFLOAT, "actpositive",     2, &(vis->rgba.actuatorpositive), "4"},
-    {mjITEM_EDITFLOAT, "com",             2, &(vis->rgba.com),              "4"},
-    {mjITEM_EDITFLOAT, "camera",          2, &(vis->rgba.camera),           "4"},
-    {mjITEM_EDITFLOAT, "light",           2, &(vis->rgba.light),            "4"},
-    {mjITEM_EDITFLOAT, "selectpoint",     2, &(vis->rgba.selectpoint),      "4"},
-    {mjITEM_EDITFLOAT, "connect",         2, &(vis->rgba.connect),          "4"},
-    {mjITEM_EDITFLOAT, "contactpoint",    2, &(vis->rgba.contactpoint),     "4"},
-    {mjITEM_EDITFLOAT, "contactforce",    2, &(vis->rgba.contactforce),     "4"},
-    {mjITEM_EDITFLOAT, "contactfriction", 2, &(vis->rgba.contactfriction),  "4"},
-    {mjITEM_EDITFLOAT, "contacttorque",   2, &(vis->rgba.contacttorque),    "4"},
-    {mjITEM_EDITFLOAT, "contactgap",      2, &(vis->rgba.contactgap),       "4"},
-    {mjITEM_EDITFLOAT, "rangefinder",     2, &(vis->rgba.rangefinder),      "4"},
-    {mjITEM_EDITFLOAT, "constraint",      2, &(vis->rgba.constraint),       "4"},
-    {mjITEM_EDITFLOAT, "slidercrank",     2, &(vis->rgba.slidercrank),      "4"},
-    {mjITEM_EDITFLOAT, "crankbroken",     2, &(vis->rgba.crankbroken),      "4"},
-    {mjITEM_EDITFLOAT, "frustum",         2, &(vis->rgba.frustum),          "4"},
-    {mjITEM_EDITFLOAT, "bv",              2, &(vis->rgba.bv),               "4"},
-    {mjITEM_EDITFLOAT, "bvactive",        2, &(vis->rgba.bvactive),         "4"},
+    {mjITEM_EDITFLOAT, "雾",             2, &(vis->rgba.fog),              "4"},
+    {mjITEM_EDITFLOAT, "霾",             2, &(vis->rgba.haze),             "4"},
+    {mjITEM_EDITFLOAT, "力",             2, &(vis->rgba.force),            "4"},
+    {mjITEM_EDITFLOAT, "惯量",           2, &(vis->rgba.inertia),          "4"},
+    {mjITEM_EDITFLOAT, "关节",           2, &(vis->rgba.joint),            "4"},
+    {mjITEM_EDITFLOAT, "执行器",         2, &(vis->rgba.actuator),         "4"},
+    {mjITEM_EDITFLOAT, "执行器负向",     2, &(vis->rgba.actuatornegative), "4"},
+    {mjITEM_EDITFLOAT, "执行器正向",     2, &(vis->rgba.actuatorpositive), "4"},
+    {mjITEM_EDITFLOAT, "质心",           2, &(vis->rgba.com),              "4"},
+    {mjITEM_EDITFLOAT, "相机",           2, &(vis->rgba.camera),           "4"},
+    {mjITEM_EDITFLOAT, "光源",           2, &(vis->rgba.light),            "4"},
+    {mjITEM_EDITFLOAT, "选点",           2, &(vis->rgba.selectpoint),      "4"},
+    {mjITEM_EDITFLOAT, "连线",           2, &(vis->rgba.connect),          "4"},
+    {mjITEM_EDITFLOAT, "接触点",         2, &(vis->rgba.contactpoint),     "4"},
+    {mjITEM_EDITFLOAT, "接触力",         2, &(vis->rgba.contactforce),     "4"},
+    {mjITEM_EDITFLOAT, "接触摩擦",       2, &(vis->rgba.contactfriction),  "4"},
+    {mjITEM_EDITFLOAT, "接触力矩",       2, &(vis->rgba.contacttorque),    "4"},
+    {mjITEM_EDITFLOAT, "接触间隙",       2, &(vis->rgba.contactgap),       "4"},
+    {mjITEM_EDITFLOAT, "测距",           2, &(vis->rgba.rangefinder),      "4"},
+    {mjITEM_EDITFLOAT, "约束",           2, &(vis->rgba.constraint),       "4"},
+    {mjITEM_EDITFLOAT, "曲柄滑块",       2, &(vis->rgba.slidercrank),      "4"},
+    {mjITEM_EDITFLOAT, "断裂曲柄",       2, &(vis->rgba.crankbroken),      "4"},
+    {mjITEM_EDITFLOAT, "视锥",           2, &(vis->rgba.frustum),          "4"},
+    {mjITEM_EDITFLOAT, "包围体",         2, &(vis->rgba.bv),               "4"},
+    {mjITEM_EDITFLOAT, "激活包围体",     2, &(vis->rgba.bvactive),         "4"},
     {mjITEM_END}
   };
 
@@ -1097,56 +1177,56 @@ void MakeVisualizationSection(mj::Simulate* sim, const mjModel* m) {
 // make group section of UI
 void MakeGroupSection(mj::Simulate* sim) {
   mjuiDef defGroup[] = {
-    {mjITEM_SECTION,    "Group enable",     mjPRESERVE, nullptr,            "AG"},
-    {mjITEM_SEPARATOR,  "Geom groups",  1},
-    {mjITEM_CHECKBYTE,  "Geom 0",           2, sim->opt.geomgroup,          " 0"},
-    {mjITEM_CHECKBYTE,  "Geom 1",           2, sim->opt.geomgroup+1,        " 1"},
-    {mjITEM_CHECKBYTE,  "Geom 2",           2, sim->opt.geomgroup+2,        " 2"},
-    {mjITEM_CHECKBYTE,  "Geom 3",           2, sim->opt.geomgroup+3,        " 3"},
-    {mjITEM_CHECKBYTE,  "Geom 4",           2, sim->opt.geomgroup+4,        " 4"},
-    {mjITEM_CHECKBYTE,  "Geom 5",           2, sim->opt.geomgroup+5,        " 5"},
-    {mjITEM_SEPARATOR,  "Site groups",  1},
-    {mjITEM_CHECKBYTE,  "Site 0",           2, sim->opt.sitegroup,          "S0"},
-    {mjITEM_CHECKBYTE,  "Site 1",           2, sim->opt.sitegroup+1,        "S1"},
-    {mjITEM_CHECKBYTE,  "Site 2",           2, sim->opt.sitegroup+2,        "S2"},
-    {mjITEM_CHECKBYTE,  "Site 3",           2, sim->opt.sitegroup+3,        "S3"},
-    {mjITEM_CHECKBYTE,  "Site 4",           2, sim->opt.sitegroup+4,        "S4"},
-    {mjITEM_CHECKBYTE,  "Site 5",           2, sim->opt.sitegroup+5,        "S5"},
-    {mjITEM_SEPARATOR,  "Joint groups", 1},
-    {mjITEM_CHECKBYTE,  "Joint 0",          2, sim->opt.jointgroup,         ""},
-    {mjITEM_CHECKBYTE,  "Joint 1",          2, sim->opt.jointgroup+1,       ""},
-    {mjITEM_CHECKBYTE,  "Joint 2",          2, sim->opt.jointgroup+2,       ""},
-    {mjITEM_CHECKBYTE,  "Joint 3",          2, sim->opt.jointgroup+3,       ""},
-    {mjITEM_CHECKBYTE,  "Joint 4",          2, sim->opt.jointgroup+4,       ""},
-    {mjITEM_CHECKBYTE,  "Joint 5",          2, sim->opt.jointgroup+5,       ""},
-    {mjITEM_SEPARATOR,  "Tendon groups",    1},
-    {mjITEM_CHECKBYTE,  "Tendon 0",         2, sim->opt.tendongroup,        ""},
-    {mjITEM_CHECKBYTE,  "Tendon 1",         2, sim->opt.tendongroup+1,      ""},
-    {mjITEM_CHECKBYTE,  "Tendon 2",         2, sim->opt.tendongroup+2,      ""},
-    {mjITEM_CHECKBYTE,  "Tendon 3",         2, sim->opt.tendongroup+3,      ""},
-    {mjITEM_CHECKBYTE,  "Tendon 4",         2, sim->opt.tendongroup+4,      ""},
-    {mjITEM_CHECKBYTE,  "Tendon 5",         2, sim->opt.tendongroup+5,      ""},
-    {mjITEM_SEPARATOR,  "Actuator groups", 1},
-    {mjITEM_CHECKBYTE,  "Actuator 0",       2, sim->opt.actuatorgroup,      ""},
-    {mjITEM_CHECKBYTE,  "Actuator 1",       2, sim->opt.actuatorgroup+1,    ""},
-    {mjITEM_CHECKBYTE,  "Actuator 2",       2, sim->opt.actuatorgroup+2,    ""},
-    {mjITEM_CHECKBYTE,  "Actuator 3",       2, sim->opt.actuatorgroup+3,    ""},
-    {mjITEM_CHECKBYTE,  "Actuator 4",       2, sim->opt.actuatorgroup+4,    ""},
-    {mjITEM_CHECKBYTE,  "Actuator 5",       2, sim->opt.actuatorgroup+5,    ""},
-    {mjITEM_SEPARATOR,  "Flex groups", 1},
-    {mjITEM_CHECKBYTE,  "Flex 0",           2, sim->opt.flexgroup,          ""},
-    {mjITEM_CHECKBYTE,  "Flex 1",           2, sim->opt.flexgroup+1,        ""},
-    {mjITEM_CHECKBYTE,  "Flex 2",           2, sim->opt.flexgroup+2,        ""},
-    {mjITEM_CHECKBYTE,  "Flex 3",           2, sim->opt.flexgroup+3,        ""},
-    {mjITEM_CHECKBYTE,  "Flex 4",           2, sim->opt.flexgroup+4,        ""},
-    {mjITEM_CHECKBYTE,  "Flex 5",           2, sim->opt.flexgroup+5,        ""},
-    {mjITEM_SEPARATOR,  "Skin groups", 1},
-    {mjITEM_CHECKBYTE,  "Skin 0",           2, sim->opt.skingroup,          ""},
-    {mjITEM_CHECKBYTE,  "Skin 1",           2, sim->opt.skingroup+1,        ""},
-    {mjITEM_CHECKBYTE,  "Skin 2",           2, sim->opt.skingroup+2,        ""},
-    {mjITEM_CHECKBYTE,  "Skin 3",           2, sim->opt.skingroup+3,        ""},
-    {mjITEM_CHECKBYTE,  "Skin 4",           2, sim->opt.skingroup+4,        ""},
-    {mjITEM_CHECKBYTE,  "Skin 5",           2, sim->opt.skingroup+5,        ""},
+    {mjITEM_SECTION,    "分组启用",         mjPRESERVE, nullptr,            "AG"},
+    {mjITEM_SEPARATOR,  "几何体分组",  1},
+    {mjITEM_CHECKBYTE,  "几何体 0",         2, sim->opt.geomgroup,          " 0"},
+    {mjITEM_CHECKBYTE,  "几何体 1",         2, sim->opt.geomgroup+1,        " 1"},
+    {mjITEM_CHECKBYTE,  "几何体 2",         2, sim->opt.geomgroup+2,        " 2"},
+    {mjITEM_CHECKBYTE,  "几何体 3",         2, sim->opt.geomgroup+3,        " 3"},
+    {mjITEM_CHECKBYTE,  "几何体 4",         2, sim->opt.geomgroup+4,        " 4"},
+    {mjITEM_CHECKBYTE,  "几何体 5",         2, sim->opt.geomgroup+5,        " 5"},
+    {mjITEM_SEPARATOR,  "位点分组",    1},
+    {mjITEM_CHECKBYTE,  "位点 0",           2, sim->opt.sitegroup,          "S0"},
+    {mjITEM_CHECKBYTE,  "位点 1",           2, sim->opt.sitegroup+1,        "S1"},
+    {mjITEM_CHECKBYTE,  "位点 2",           2, sim->opt.sitegroup+2,        "S2"},
+    {mjITEM_CHECKBYTE,  "位点 3",           2, sim->opt.sitegroup+3,        "S3"},
+    {mjITEM_CHECKBYTE,  "位点 4",           2, sim->opt.sitegroup+4,        "S4"},
+    {mjITEM_CHECKBYTE,  "位点 5",           2, sim->opt.sitegroup+5,        "S5"},
+    {mjITEM_SEPARATOR,  "关节分组",    1},
+    {mjITEM_CHECKBYTE,  "关节 0",           2, sim->opt.jointgroup,         ""},
+    {mjITEM_CHECKBYTE,  "关节 1",           2, sim->opt.jointgroup+1,       ""},
+    {mjITEM_CHECKBYTE,  "关节 2",           2, sim->opt.jointgroup+2,       ""},
+    {mjITEM_CHECKBYTE,  "关节 3",           2, sim->opt.jointgroup+3,       ""},
+    {mjITEM_CHECKBYTE,  "关节 4",           2, sim->opt.jointgroup+4,       ""},
+    {mjITEM_CHECKBYTE,  "关节 5",           2, sim->opt.jointgroup+5,       ""},
+    {mjITEM_SEPARATOR,  "肌腱分组",    1},
+    {mjITEM_CHECKBYTE,  "肌腱 0",           2, sim->opt.tendongroup,        ""},
+    {mjITEM_CHECKBYTE,  "肌腱 1",           2, sim->opt.tendongroup+1,      ""},
+    {mjITEM_CHECKBYTE,  "肌腱 2",           2, sim->opt.tendongroup+2,      ""},
+    {mjITEM_CHECKBYTE,  "肌腱 3",           2, sim->opt.tendongroup+3,      ""},
+    {mjITEM_CHECKBYTE,  "肌腱 4",           2, sim->opt.tendongroup+4,      ""},
+    {mjITEM_CHECKBYTE,  "肌腱 5",           2, sim->opt.tendongroup+5,      ""},
+    {mjITEM_SEPARATOR,  "执行器分组",  1},
+    {mjITEM_CHECKBYTE,  "执行器 0",         2, sim->opt.actuatorgroup,      ""},
+    {mjITEM_CHECKBYTE,  "执行器 1",         2, sim->opt.actuatorgroup+1,    ""},
+    {mjITEM_CHECKBYTE,  "执行器 2",         2, sim->opt.actuatorgroup+2,    ""},
+    {mjITEM_CHECKBYTE,  "执行器 3",         2, sim->opt.actuatorgroup+3,    ""},
+    {mjITEM_CHECKBYTE,  "执行器 4",         2, sim->opt.actuatorgroup+4,    ""},
+    {mjITEM_CHECKBYTE,  "执行器 5",         2, sim->opt.actuatorgroup+5,    ""},
+    {mjITEM_SEPARATOR,  "柔体分组",    1},
+    {mjITEM_CHECKBYTE,  "柔体 0",           2, sim->opt.flexgroup,          ""},
+    {mjITEM_CHECKBYTE,  "柔体 1",           2, sim->opt.flexgroup+1,        ""},
+    {mjITEM_CHECKBYTE,  "柔体 2",           2, sim->opt.flexgroup+2,        ""},
+    {mjITEM_CHECKBYTE,  "柔体 3",           2, sim->opt.flexgroup+3,        ""},
+    {mjITEM_CHECKBYTE,  "柔体 4",           2, sim->opt.flexgroup+4,        ""},
+    {mjITEM_CHECKBYTE,  "柔体 5",           2, sim->opt.flexgroup+5,        ""},
+    {mjITEM_SEPARATOR,  "皮肤分组",    1},
+    {mjITEM_CHECKBYTE,  "皮肤 0",           2, sim->opt.skingroup,          ""},
+    {mjITEM_CHECKBYTE,  "皮肤 1",           2, sim->opt.skingroup+1,        ""},
+    {mjITEM_CHECKBYTE,  "皮肤 2",           2, sim->opt.skingroup+2,        ""},
+    {mjITEM_CHECKBYTE,  "皮肤 3",           2, sim->opt.skingroup+3,        ""},
+    {mjITEM_CHECKBYTE,  "皮肤 4",           2, sim->opt.skingroup+4,        ""},
+    {mjITEM_CHECKBYTE,  "皮肤 5",           2, sim->opt.skingroup+5,        ""},
     {mjITEM_END}
   };
 
@@ -1157,7 +1237,7 @@ void MakeGroupSection(mj::Simulate* sim) {
 // make joint section of UI
 void MakeJointSection(mj::Simulate* sim) {
   mjuiDef defJoint[] = {
-    {mjITEM_SECTION, "Joint", mjPRESERVE, nullptr, "AJ"},
+    {mjITEM_SECTION, "关节", mjPRESERVE, nullptr, "AJ"},
     {mjITEM_END}
   };
   mjuiDef defSlider[] = {
@@ -1187,7 +1267,7 @@ void MakeJointSection(mj::Simulate* sim) {
       if (!sim->jnt_names_[i].empty()) {
         mju::strcpy_arr(defSlider[0].name, sim->jnt_names_[i].c_str());
       } else {
-        mju::sprintf_arr(defSlider[0].name, "joint %d", i);
+        mju::sprintf_arr(defSlider[0].name, "关节 %d", i);
       }
 
       // set range
@@ -1210,8 +1290,8 @@ void MakeJointSection(mj::Simulate* sim) {
 // make control section of UI
 void MakeControlSection(mj::Simulate* sim) {
   mjuiDef defControl[] = {
-    {mjITEM_SECTION, "Control", mjPRESERVE, nullptr, "AC"},
-    {mjITEM_BUTTON,  "Clear all", 2},
+    {mjITEM_SECTION, "控制", mjPRESERVE, nullptr, "AC"},
+    {mjITEM_BUTTON,  "全部清零", 2},
     {mjITEM_END}
   };
   mjuiDef defSlider[] = {
@@ -1246,7 +1326,7 @@ void MakeControlSection(mj::Simulate* sim) {
     if (!sim->actuator_names_[i].empty()) {
       mju::strcpy_arr(defSlider[0].name, sim->actuator_names_[i].c_str());
     } else {
-      mju::sprintf_arr(defSlider[0].name, "control %d", i);
+      mju::sprintf_arr(defSlider[0].name, "控制 %d", i);
     }
 
     // set range
@@ -1266,7 +1346,7 @@ void MakeControlSection(mj::Simulate* sim) {
 // make equality section of UI
 void MakeEqualitySection(mj::Simulate* sim) {
   mjuiDef defEquality[] = {
-    {mjITEM_SECTION, "Equality", mjPRESERVE, nullptr, "AE"},
+    {mjITEM_SECTION, "等式约束", mjPRESERVE, nullptr, "AE"},
     {mjITEM_END}
   };
   mjuiDef defCheckBox[] = {
@@ -1286,7 +1366,7 @@ void MakeEqualitySection(mj::Simulate* sim) {
     if (!sim->equality_names_[i].empty()) {
       mju::strcpy_arr(defCheckBox[0].name, sim->equality_names_[i].c_str());
     } else {
-      mju::sprintf_arr(defCheckBox[0].name, "equality %d", i);
+      mju::sprintf_arr(defCheckBox[0].name, "约束 %d", i);
     }
 
     mjui_add(&sim->ui1, defCheckBox);
@@ -1748,15 +1828,18 @@ void UiEvent(mjuiState* state) {
 
     // visualization section
     else if (it && it->sectionid==SECT_VISUALIZATION) {
-      if (!mju::strcmp_arr(it->name, "Align")) {
+      if (!mju::strcmp_arr(it->name, "对齐")) {
         sim->pending_.align = true;
       }
     }
 
     // group section
     else if (it && it->sectionid==SECT_GROUP) {
+      auto* pdata = static_cast<mjtByte*>(it->pdata);
+
       // remake joint section if joint group changed
-      if (it->name[0]=='J' && it->name[1]=='o') {
+      if (pdata >= sim->opt.jointgroup &&
+          pdata < sim->opt.jointgroup + mjNGROUP) {
         sim->ui1.nsect = SECT_JOINT;
         MakeJointSection(sim);
         sim->ui1.nsect = NSECT1;
@@ -1764,7 +1847,8 @@ void UiEvent(mjuiState* state) {
       }
 
       // remake control section if actuator group changed
-      if (it->name[0]=='A' && it->name[1]=='c') {
+      if (pdata >= sim->opt.actuatorgroup &&
+          pdata < sim->opt.actuatorgroup + mjNGROUP) {
         sim->pending_.ui_remake_ctrl = true;
       }
     }
@@ -2152,7 +2236,7 @@ void Simulate::Sync(bool state_only) {
   if (pending_.save_xml) {
     char err[200];
     if (!pending_.save_xml->empty() && !mj_saveLastXML(pending_.save_xml->c_str(), m_, err, 200)) {
-      std::printf("Save XML error: %s", err);
+      std::printf("保存 XML 出错: %s", err);
     }
     pending_.save_xml = std::nullopt;
   }
@@ -2629,12 +2713,12 @@ void Simulate::Render() {
 
     // label
     if (this->loadrequest) {
-      mjr_overlay(mjFONT_BIG, mjGRID_TOP, smallrect, "LOADING...", nullptr,
+      mjr_overlay(mjFONT_BIG, mjGRID_TOP, smallrect, "加载中...", nullptr,
                   &this->platform_ui->mjr_context());
     } else {
       char intro_message[Simulate::kMaxFilenameLength];
       mju::sprintf_arr(intro_message,
-                       "MuJoCo version %s\nDrag-and-drop model file here", mj_versionString());
+                       "MuJoCo 版本 %s\n将模型文件拖放到此处", mj_versionString());
       mjr_overlay(mjFONT_NORMAL, mjGRID_TOPLEFT, rect, intro_message, 0,
                   &this->platform_ui->mjr_context());
     }
@@ -2759,14 +2843,14 @@ void Simulate::Render() {
 
   // show pause/loading label
   if (!this->run || this->loadrequest) {
-    char label[30] = {'\0'};
-    if (this->loadrequest) {
-      std::snprintf(label, sizeof(label), "LOADING...");
-    } else if (this->scrub_index == 0) {
-      std::snprintf(label, sizeof(label), "PAUSE");
-    } else {
-      std::snprintf(label, sizeof(label), "PAUSE (%d)", this->scrub_index);
-    }
+      char label[30] = {'\0'};
+      if (this->loadrequest) {
+        std::snprintf(label, sizeof(label), "加载中...");
+      } else if (this->scrub_index == 0) {
+        std::snprintf(label, sizeof(label), "暂停");
+      } else {
+        std::snprintf(label, sizeof(label), "暂停 (%d)", this->scrub_index);
+      }
     mjr_overlay(mjFONT_BIG, mjGRID_TOP, smallrect, label, nullptr,
                 &this->platform_ui->mjr_context());
   }
@@ -2835,7 +2919,7 @@ void Simulate::Render() {
     const unsigned int w = uistate.rect[0].width;
     std::unique_ptr<unsigned char[]> rgb(new unsigned char[3*w*h]);
     if (!rgb) {
-      mju_error("could not allocate buffer for screenshot");
+      mju_error("无法为截图分配缓冲区");
     }
     mjr_readPixels(rgb.get(), nullptr, uistate.rect[0], &this->platform_ui->mjr_context());
 
@@ -2854,9 +2938,9 @@ void Simulate::Render() {
     const std::string path = GetSavePath("screenshot.png");
     if (!path.empty()) {
       if (lodepng::encode(path, rgb.get(), w, h, LCT_RGB)) {
-        mju_error("could not save screenshot");
+        mju_error("无法保存截图");
       } else {
-        std::printf("saved screenshot: %s\n", path.c_str());
+        std::printf("截图已保存: %s\n", path.c_str());
       }
     }
   }

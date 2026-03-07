@@ -301,40 +301,40 @@ class Simulate {
   // Constant arrays needed for the option section of UI and the UI interface
   // TODO setting the size here is not ideal
   const mjuiDef def_option[13] = {
-    {mjITEM_SECTION,  "Option",        mjPRESERVE, nullptr,  "AO"},
-    {mjITEM_CHECKINT, "Help",          2, &this->help,       " #290"},
-    {mjITEM_CHECKINT, "Info",          2, &this->info,       " #291"},
-    {mjITEM_CHECKINT, "Profiler",      2, &this->profiler,   " #292"},
-    {mjITEM_CHECKINT, "Sensor",        2, &this->sensor,     " #293"},
-    {mjITEM_CHECKINT, "Pause update",  2, &this->pause_update,    ""},
+    {mjITEM_SECTION,  "选项",          mjPRESERVE, nullptr,  "AO"},
+    {mjITEM_CHECKINT, "帮助",          2, &this->help,       " #290"},
+    {mjITEM_CHECKINT, "信息",          2, &this->info,       " #291"},
+    {mjITEM_CHECKINT, "性能分析",      2, &this->profiler,   " #292"},
+    {mjITEM_CHECKINT, "传感器",        2, &this->sensor,     " #293"},
+    {mjITEM_CHECKINT, "暂停时更新",    2, &this->pause_update,    ""},
   #ifdef __APPLE__
-    {mjITEM_CHECKINT, "Fullscreen",    0, &this->fullscreen, " #294"},
+    {mjITEM_CHECKINT, "全屏",          0, &this->fullscreen, " #294"},
   #else
-    {mjITEM_CHECKINT, "Fullscreen",    1, &this->fullscreen, " #294"},
+    {mjITEM_CHECKINT, "全屏",          1, &this->fullscreen, " #294"},
   #endif
-    {mjITEM_CHECKINT, "Vertical Sync", 1, &this->vsync,      ""},
-    {mjITEM_CHECKINT, "Busy Wait",     1, &this->busywait,   ""},
-    {mjITEM_SELECT,   "Spacing",       1, &this->spacing,    "Tight\nWide"},
-    {mjITEM_SELECT,   "Color",         1, &this->color,      "Default\nOrange\nWhite\nBlack"},
-    {mjITEM_SELECT,   "Font",          1, &this->font,       "50 %\n100 %\n150 %\n200 %\n250 %\n300 %"},
+    {mjITEM_CHECKINT, "垂直同步",      1, &this->vsync,      ""},
+    {mjITEM_CHECKINT, "忙等待",        1, &this->busywait,   ""},
+    {mjITEM_SELECT,   "间距",          1, &this->spacing,    "紧凑\n宽松"},
+    {mjITEM_SELECT,   "配色",          1, &this->color,      "默认\n橙色\n白色\n黑色"},
+    {mjITEM_SELECT,   "字体",          1, &this->font,       "50 %\n100 %\n150 %\n200 %\n250 %\n300 %"},
     {mjITEM_END}
   };
 
 
   // simulation section of UI
   const mjuiDef def_simulation[14] = {
-    {mjITEM_SECTION,   "Simulation",    mjPRESERVE, nullptr,     "AS"},
-    {mjITEM_RADIO,     "",              5, &this->run,           "Pause\nRun"},
-    {mjITEM_BUTTON,    "Reset",         2, nullptr,              " #259"},
-    {mjITEM_BUTTON,    "Reload",        5, nullptr,              "CL"},
-    {mjITEM_BUTTON,    "Align",         2, nullptr,              "CA"},
-    {mjITEM_BUTTON,    "Copy state",    2, nullptr,              "CC"},
-    {mjITEM_SLIDERINT, "Key",           3, &this->key,           "0 0"},
-    {mjITEM_BUTTON,    "Load key",      3},
-    {mjITEM_BUTTON,    "Save key",      3},
-    {mjITEM_SLIDERNUM, "Noise scale",   5, &this->ctrl_noise_std,  "0 1"},
-    {mjITEM_SLIDERNUM, "Noise rate",    5, &this->ctrl_noise_rate, "0 4"},
-    {mjITEM_SEPARATOR, "History",       1},
+    {mjITEM_SECTION,   "仿真",          mjPRESERVE, nullptr,     "AS"},
+    {mjITEM_RADIO,     "",              5, &this->run,           "暂停\n运行"},
+    {mjITEM_BUTTON,    "重置",          2, nullptr,              " #259"},
+    {mjITEM_BUTTON,    "重新加载",      5, nullptr,              "CL"},
+    {mjITEM_BUTTON,    "对齐视角",      2, nullptr,              "CA"},
+    {mjITEM_BUTTON,    "复制状态",      2, nullptr,              "CC"},
+    {mjITEM_SLIDERINT, "关键帧",        3, &this->key,           "0 0"},
+    {mjITEM_BUTTON,    "载入关键帧",    3},
+    {mjITEM_BUTTON,    "保存关键帧",    3},
+    {mjITEM_SLIDERNUM, "噪声幅度",      5, &this->ctrl_noise_std,  "0 1"},
+    {mjITEM_SLIDERNUM, "噪声速率",      5, &this->ctrl_noise_rate, "0 4"},
+    {mjITEM_SEPARATOR, "历史",          1},
     {mjITEM_SLIDERINT, "",              5, &this->scrub_index,     "0 0"},
     {mjITEM_END}
   };
@@ -342,10 +342,10 @@ class Simulate {
 
   // watch section of UI
   const mjuiDef def_watch[5] = {
-    {mjITEM_SECTION,   "Watch",         mjPRESERVE, nullptr,     "AW"},
-    {mjITEM_EDITTXT,   "Field",         2, this->field,          "qpos"},
-    {mjITEM_EDITINT,   "Index",         2, &this->index,         "1"},
-    {mjITEM_STATIC,    "Value",         2, nullptr,              " "},
+    {mjITEM_SECTION,   "监视",          mjPRESERVE, nullptr,     "AW"},
+    {mjITEM_EDITTXT,   "字段",          2, this->field,          "qpos"},
+    {mjITEM_EDITINT,   "索引",          2, &this->index,         "1"},
+    {mjITEM_STATIC,    "值",            2, nullptr,              " "},
     {mjITEM_END}
   };
 
