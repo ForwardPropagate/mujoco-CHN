@@ -1,0 +1,90 @@
+name: package-windows-simulate
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/package-windows-simulate.yml"
+      - "simulate/**"
+      - "src/**"
+      - "include/**"
+      - "CMakeLists.txt"
+      - "cmake/**"
+
+jobs:
+  package:
+    runs-on: windows-2025
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Configure
+        shell: powershell
+        run: |
+          cmake -S . -B build `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_SYSTEM_VERSION=10.0.26100.0 `
+            -DMUJOCO_BUILD_TESTS=OFF `
+            -DMUJOCO_BUILD_EXAMPLES=OFF `
+            -DMUJOCO_BUILD_SIMULATE=ON
+
+      - name: Build simulate
+        shell: powershell
+        run: |
+          cmake --build build --config Release --target simulate --parallel
+
+      - name: Collect runtime files
+        shell: powershell
+        run: |
+          $stage = Join-Path $env:RUNNER_TEMP "mujoco-simulate-windows-x64"
+          New-Item -ItemType Directory -Path $stage -Force | Out-Null
+
+          $bin = Join-Path $PWD "build/bin/Release"
+          Copy-Item (Join-Path $bin "simulate.exe") $stage -Force
+
+          # MuJoCo runtime DLL
+          if (Test-Path (Join-Path $bin "mujoco.dll")) {
+            Copy-Item (Join-Path $bin "mujoco.dll") $stage -Force
+          }
+
+          # Optional plugin DLLs
+          $plugins = @("actuator.dll", "elasticity.dll", "obj_decoder.dll", "sensor.dll", "sdf_plugin.dll")
+          foreach ($dll in $plugins) {
+            $src = Join-Path $bin $dll
+            if (Test-Path $src) { Copy-Item $src $stage -Force }
+          }
+
+          # VC runtime DLLs workaround (same as upstream CI)
+          $msvcRoot = (Get-ChildItem -Directory -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Redist\MSVC\14.*" |
+            Sort-Object Name -Descending | Select-Object -First 1).FullName
+          if ($msvcRoot) {
+            Copy-Item (Join-Path $msvcRoot "x64\Microsoft.VC143.CRT\*.dll") $stage -Force
+          }
+
+          # Useful assets and docs
+          Copy-Item "LICENSE" $stage -Force
+          Copy-Item "README.md" $stage -Force
+          Copy-Item "model" (Join-Path $stage "model") -Recurse -Force
+
+      - name: Create zip
+        shell: powershell
+        run: |
+          $stage = Join-Path $env:RUNNER_TEMP "mujoco-simulate-windows-x64"
+          $zip = Join-Path $env:RUNNER_TEMP "mujoco-simulate-windows-x64.zip"
+          if (Test-Path $zip) { Remove-Item $zip -Force }
+          Compress-Archive -Path (Join-Path $stage "*") -DestinationPath $zip -CompressionLevel Optimal
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mujoco-simulate-windows-x64
+          path: ${{ runner.temp }}/mujoco-simulate-windows-x64.zip
+          if-no-files-found: error
