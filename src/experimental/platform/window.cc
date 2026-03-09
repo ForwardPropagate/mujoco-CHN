@@ -15,7 +15,9 @@
 #include "experimental/platform/window.h"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
+#include <cstdlib>
 #include <span>
 #include <string>
 #include <string_view>
@@ -47,6 +49,50 @@ extern void* GetNativeWindowOsx(void* window);
 
 namespace mujoco::platform {
 
+static bool LoadCjkFallbackFont(ImGuiIO& io, float font_size) {
+  ImFontConfig cjk_cfg;
+  cjk_cfg.MergeMode = true;
+  cjk_cfg.PixelSnapH = true;
+  const ImWchar* ranges = io.Fonts->GetGlyphRangesChineseSimplifiedCommon();
+
+  if (const char* env_font = std::getenv("MUJOCO_CJK_FONT");
+      env_font && env_font[0]) {
+    if (io.Fonts->AddFontFromFileTTF(env_font, font_size, &cjk_cfg, ranges)) {
+      return true;
+    }
+  }
+
+#if defined(_WIN32)
+  static constexpr std::array<const char*, 4> kCandidates = {
+      "C:\\Windows\\Fonts\\msyh.ttc",     // Microsoft YaHei
+      "C:\\Windows\\Fonts\\msyh.ttf",
+      "C:\\Windows\\Fonts\\simhei.ttf",
+      "C:\\Windows\\Fonts\\simsun.ttc",
+  };
+#elif defined(__APPLE__)
+  static constexpr std::array<const char*, 3> kCandidates = {
+      "/System/Library/Fonts/PingFang.ttc",
+      "/System/Library/Fonts/STHeiti Light.ttc",
+      "/System/Library/Fonts/Hiragino Sans GB.ttc",
+  };
+#else
+  static constexpr std::array<const char*, 5> kCandidates = {
+      "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+      "/usr/share/fonts/opentype/noto/NotoSansCJKSC-Regular.otf",
+      "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+      "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
+      "/usr/share/fonts/truetype/arphic/uming.ttc",
+  };
+#endif
+
+  for (const char* path : kCandidates) {
+    if (io.Fonts->AddFontFromFileTTF(path, font_size, &cjk_cfg, ranges)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 static void InitImGui(SDL_Window* window, float content_scale, bool load_fonts,
                       bool build_fonts) {
   ImGui::CreateContext();
@@ -75,6 +121,10 @@ static void InitImGui(SDL_Window* window, float content_scale, bool load_fonts,
         mju_openResource("", "font:OpenSans-Regular.ttf", nullptr, nullptr, 0);
     size = mju_readResource(font, const_cast<const void**>(&data));
     io.Fonts->AddFontFromMemoryTTF(data, size, 20.f, &main_cfg);
+
+    // Merge a CJK fallback font so Simplified Chinese labels render correctly.
+    // This tries MUJOCO_CJK_FONT first, then common system font locations.
+    LoadCjkFallbackFont(io, 20.f);
 
     ImFontConfig icon_cfg;
     icon_cfg.FontDataOwnedByAtlas = false;

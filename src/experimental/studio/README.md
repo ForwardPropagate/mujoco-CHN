@@ -17,6 +17,16 @@ bash build.sh
 > [!NOTE]
 > For now [`build.sh`](build.sh) script works on windows in a git bash shell.
 
+### Chinese Font Rendering
+
+Studio now attempts to load a system CJK fallback font automatically for
+Simplified Chinese text rendering. If your system font lookup fails, you can
+set `MUJOCO_CJK_FONT` to a specific font file path before launch, for example:
+
+```bash
+export MUJOCO_CJK_FONT="/System/Library/Fonts/PingFang.ttc"
+```
+
 ## Development
 
 The [`build.sh`](build.sh) script is intended to get you up and running quickly.
