@@ -93,6 +93,10 @@ jobs:
             'cd /d "%~dp0"',
             'set EXE=%~dp0mujoco_studio.exe',
             'echo [%date% %time%] launching with backend fallback > studio_launch.log',
+            'echo try: classic>> studio_launch.log',
+            '"%EXE%" --gfx=classic >> studio_launch.log 2>&1',
+            'if %errorlevel%==0 goto :done',
+            'echo classic failed with exit_code=%errorlevel%>> studio_launch.log',
             'echo try: vulkan>> studio_launch.log',
             '"%EXE%" --gfx=vulkan >> studio_launch.log 2>&1',
             'if %errorlevel%==0 goto :done',
@@ -101,8 +105,6 @@ jobs:
             '"%EXE%" --gfx=opengl >> studio_launch.log 2>&1',
             'if %errorlevel%==0 goto :done',
             'echo opengl failed with exit_code=%errorlevel%>> studio_launch.log',
-            'echo try: classic>> studio_launch.log',
-            '"%EXE%" --gfx=classic >> studio_launch.log 2>&1',
             ':done',
             'echo final_exit_code=%errorlevel%>> studio_launch.log'
           )

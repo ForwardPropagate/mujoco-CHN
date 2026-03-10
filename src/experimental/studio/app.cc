@@ -1567,9 +1567,9 @@ void App::ToolBarGui() {
     }
     ImGui::PopStyleVar();
     if (misaligned) {
-      ImGui::SetItemTooltip("%s", "Desired Speed (Measured Speed)");
+      ImGui::SetItemTooltip("%s", "目标速度（实测速度）");
     } else {
-      ImGui::SetItemTooltip("%s", "Desired Speed");
+      ImGui::SetItemTooltip("%s", "目标速度");
     }
 
     ImGui::TableNextColumn();
@@ -1581,7 +1581,7 @@ void App::ToolBarGui() {
       std::string camera_string = platform::CameraToString(data(), &camera_);
       platform::MaybeSaveToClipboard(camera_string);
     }
-    ImGui::SetItemTooltip("%s", "Copy Camera");
+    ImGui::SetItemTooltip("%s", "复制相机");
     ImGui::SameLine(0, 0);
     ImGui::SetNextItemWidth(GetExpectedLabelWidth());
     int camera_idx = ui_.camera_idx - platform::kTumbleCameraIdx;
@@ -1597,7 +1597,7 @@ void App::ToolBarGui() {
       }
       ImGui::EndCombo();
     }
-    ImGui::SetItemTooltip("%s", "Camera");
+    ImGui::SetItemTooltip("%s", "相机");
 
     // Label selection.
     ImGui::SameLine();
@@ -1612,7 +1612,7 @@ void App::ToolBarGui() {
       }
       ImGui::EndCombo();
     }
-    ImGui::SetItemTooltip("%s", "Label");
+    ImGui::SetItemTooltip("%s", "标签");
 
     // Frame selection.
     ImGui::SameLine();
@@ -1627,13 +1627,13 @@ void App::ToolBarGui() {
       }
       ImGui::EndCombo();
     }
-    ImGui::SetItemTooltip("%s", "Frame");
+    ImGui::SetItemTooltip("%s", "坐标轴");
 
     // Theme selection.
     ImGui::SameLine();
     const char* theme_icons[] = {ICON_LIGHTMODE, ICON_DARKMODE,
                                  ICON_CLASSICMODE};
-    const char* theme_tooltips[] = {"Light Mode", "Dark Mode", "Classic Mode"};
+    const char* theme_tooltips[] = {"浅色模式", "深色模式", "经典模式"};
     const platform::GuiTheme theme_values[] = {
         platform::GuiTheme::kLight,
         platform::GuiTheme::kDark,
@@ -1653,7 +1653,7 @@ void App::ToolBarGui() {
       }
       ImGui::EndCombo();
     }
-    ImGui::SetItemTooltip("%s", "Theme");
+    ImGui::SetItemTooltip("%s", "主题");
 
     ImGui::EndTable();
   }
@@ -1667,25 +1667,25 @@ void App::StatusBarGui() {
     ImGui::TableNextColumn();
 
     if (!has_model()) {
-      ImGui::Text("No model loaded");
+      ImGui::Text("未加载模型");
     } else if (step_control_.GetPauseState() == PauseState::kViscousPaused) {
-      ImGui::Text("Viscous Pause");
-      ImGui::SetItemTooltip("Zero gravity, high viscosity, no spring forces");
+      ImGui::Text("黏滞暂停");
+      ImGui::SetItemTooltip("零重力、高黏度、无弹簧力");
     } else if (step_control_.GetPauseState() == PauseState::kNormalPaused) {
-      ImGui::Text("Paused");
+      ImGui::Text("已暂停");
     } else {
-      ImGui::Text("Running");
+      ImGui::Text("运行中");
     }
 
     if (!step_error_.empty()) {
       ImGui::SameLine();
-      ImGui::Text(" | Step Error: %s", step_error_.c_str());
+      ImGui::Text(" | 步进错误：%s", step_error_.c_str());
     } else if (!load_error_.empty()) {
       ImGui::SameLine();
-      ImGui::Text(" | Load Error: %s", load_error_.c_str());
+      ImGui::Text(" | 加载错误：%s", load_error_.c_str());
     } else if (!edit_error_.empty()) {
       ImGui::SameLine();
-      ImGui::Text(" | Edit Error: %s", edit_error_.c_str());
+      ImGui::Text(" | 编辑错误：%s", edit_error_.c_str());
     }
 
     ImGui::TableNextColumn();
@@ -1700,7 +1700,7 @@ void App::StatusBarGui() {
     if (ImGui::Button(ICON_PREV_FRAME)) {
       LoadHistory(sim_history_.GetIndex() - 1);
     }
-    ImGui::SetItemTooltip("%s", "Previous Frame");
+    ImGui::SetItemTooltip("%s", "上一帧");
 
     style.Reset();
     ImGui::SameLine();
@@ -1720,13 +1720,13 @@ void App::StatusBarGui() {
         LoadHistory(sim_history_.GetIndex() + 1);
       }
     }
-    ImGui::SetItemTooltip("%s", "Next Frame");
+    ImGui::SetItemTooltip("%s", "下一帧");
 
     ImGui::SameLine();
     if (ImGui::Button(ICON_CURR_FRAME)) {
       LoadHistory(0);
     }
-    ImGui::SetItemTooltip("%s", "Current Frame");
+    ImGui::SetItemTooltip("%s", "当前帧");
 
     ImGui::EndTable();
   }
@@ -1734,45 +1734,45 @@ void App::StatusBarGui() {
 
 void App::MainMenuGui() {
   if (ImGui::BeginMainMenuBar()) {
-    if (ImGui::BeginMenu("File")) {
+    if (ImGui::BeginMenu("文件")) {
 #ifndef __EMSCRIPTEN__
-      if (ImGui::MenuItem("Open Model File", "Ctrl+O")) {
+      if (ImGui::MenuItem("打开模型文件", "Ctrl+O")) {
         tmp_.file_dialog = UiTempState::FileDialog_Load;
       }
       ImGui::Separator();
-      if (ImGui::MenuItem("Save XML", "Ctrl+S")) {
+      if (ImGui::MenuItem("保存 XML", "Ctrl+S")) {
         tmp_.file_dialog = UiTempState::FileDialog_SaveXml;
       }
-      if (ImGui::MenuItem("Save MJB", "Ctrl+Shift+S")) {
+      if (ImGui::MenuItem("保存 MJB", "Ctrl+Shift+S")) {
         tmp_.file_dialog = UiTempState::FileDialog_SaveMjb;
       }
-      if (ImGui::MenuItem("Save Screenshot", "Ctrl+P")) {
+      if (ImGui::MenuItem("保存截图", "Ctrl+P")) {
         tmp_.file_dialog = UiTempState::FileDialog_SaveScreenshot;
       }
       ImGui::Separator();
-      if (ImGui::MenuItem("Print Model", "Ctrl+M")) {
+      if (ImGui::MenuItem("导出模型文本", "Ctrl+M")) {
         tmp_.file_dialog = UiTempState::FileDialog_PrintModel;
       }
-      if (ImGui::MenuItem("Print Data", "Ctrl+D")) {
+      if (ImGui::MenuItem("导出数据文本", "Ctrl+D")) {
         tmp_.file_dialog = UiTempState::FileDialog_PrintData;
       }
       ImGui::Separator();
 #endif  // !__EMSCRIPTEN__
-      if (ImGui::MenuItem("Unload", "Ctrl+U")) {
+      if (ImGui::MenuItem("卸载模型", "Ctrl+U")) {
         InitEmptyModel();
       }
 #ifndef __EMSCRIPTEN__
       ImGui::Separator();
-      if (ImGui::MenuItem("Quit", "Ctrl+Q")) {
+      if (ImGui::MenuItem("退出", "Ctrl+Q")) {
         tmp_.should_exit = true;
       }
 #endif  // !__EMSCRIPTEN__
       ImGui::EndMenu();
     }
 
-    if (ImGui::BeginMenu("Simulation")) {
+    if (ImGui::BeginMenu("仿真")) {
       if (ImGui::MenuItem(
-              "Pause", "Space",
+              "暂停", "Space",
               step_control_.GetPauseState() == PauseState::kNormalPaused)) {
         if (step_control_.GetPauseState() != PauseState::kNormalPaused) {
           step_control_.SetPauseState(PauseState::kNormalPaused);
@@ -1780,24 +1780,24 @@ void App::MainMenuGui() {
           step_control_.SetPauseState(PauseState::kUnpaused, model());
         }
       }
-      if (ImGui::MenuItem("Reset", "Backspace")) {
+      if (ImGui::MenuItem("重置", "Backspace")) {
         ResetPhysics();
       }
-      if (ImGui::MenuItem("Reload", "Ctrl+L")) {
+      if (ImGui::MenuItem("重新加载", "Ctrl+L")) {
         RequestModelReload();
       }
       ImGui::Separator();
-      if (ImGui::BeginMenu("Keyframes")) {
+      if (ImGui::BeginMenu("关键帧")) {
         ImGui::SetNextItemWidth(200);
         ImGui::SliderInt("##Key", &ui_.key_idx, 0, model()->nkey);
-        if (ImGui::MenuItem("Load")) {
+        if (ImGui::MenuItem("加载")) {
           mj_resetDataKeyframe(model(), data(), ui_.key_idx);
           mj_forward(model(), data());
         }
-        if (ImGui::MenuItem("Save")) {
+        if (ImGui::MenuItem("保存")) {
           mj_setKeyframe(model(), data(), ui_.key_idx);
         }
-        if (ImGui::MenuItem("Copy")) {
+        if (ImGui::MenuItem("复制")) {
           std::string str = platform::KeyframeToString(model(), data(), false);
           platform::MaybeSaveToClipboard(str);
         }
@@ -1806,45 +1806,45 @@ void App::MainMenuGui() {
       ImGui::EndMenu();
     }
 
-    if (ImGui::BeginMenu("View")) {
-      if (ImGui::MenuItem("Save Config")) {
+    if (ImGui::BeginMenu("视图")) {
+      if (ImGui::MenuItem("保存配置")) {
         SaveSettings();
       }
-      if (ImGui::MenuItem("Reset Config")) {
+      if (ImGui::MenuItem("重置配置")) {
         platform::SaveText("\n\n", ini_path_);
         LoadSettings();
       }
       ImGui::Separator();
 
-      if (ImGui::MenuItem(tmp_.options_panel ? "Hide Options" : "Show Options",
+      if (ImGui::MenuItem(tmp_.options_panel ? "隐藏选项" : "显示选项",
                           "Tab")) {
         tmp_.options_panel = !tmp_.options_panel;
       }
       if (ImGui::MenuItem(
-              tmp_.inspector_panel ? "Hide Inspector" : "Show Inspector",
+              tmp_.inspector_panel ? "隐藏检查器" : "显示检查器",
               "Shift+Tab")) {
         tmp_.inspector_panel = !tmp_.inspector_panel;
       }
-      if (ImGui::MenuItem("Full Screen", "F11")) {
+      if (ImGui::MenuItem("全屏", "F11")) {
         tmp_.full_screen = !tmp_.full_screen;
       }
       ImGui::Separator();
 
-      if (ImGui::MenuItem("Picture-in-Picture")) {
+      if (ImGui::MenuItem("画中画")) {
         tmp_.picture_in_picture = !tmp_.picture_in_picture;
       }
       ImGui::Separator();
 
 
-      if (ImGui::BeginMenu("Graphics Mode (Experimental)")) {
+      if (ImGui::BeginMenu("图形模式（实验）")) {
         std::optional<platform::GraphicsMode> mode;
         if (ImGui::MenuItem(
-                "Classic OpenGL", nullptr,
+                "经典 OpenGL", nullptr,
                 gfx_mode_ == platform::GraphicsMode::ClassicOpenGl)) {
           mode = platform::GraphicsMode::ClassicOpenGl;
         }
         if (ImGui::MenuItem(
-                "Classic OpenGL Headless", nullptr,
+                "经典 OpenGL 无头", nullptr,
                 gfx_mode_ == platform::GraphicsMode::ClassicOpenGlHeadless)) {
           mode = platform::GraphicsMode::ClassicOpenGlHeadless;
         }
@@ -1854,7 +1854,7 @@ void App::MainMenuGui() {
           mode = platform::GraphicsMode::FilamentOpenGl;
         }
         if (ImGui::MenuItem(
-                "Filament OpenGL Headless", nullptr,
+                "Filament OpenGL 无头", nullptr,
                 gfx_mode_ == platform::GraphicsMode::FilamentOpenGlHeadless)) {
           mode = platform::GraphicsMode::FilamentOpenGlHeadless;
         }
@@ -1881,40 +1881,40 @@ void App::MainMenuGui() {
       ImGui::EndMenu();
     }
 
-    if (ImGui::BeginMenu("Charts")) {
-      if (ImGui::MenuItem("Solver", "F9")) {
+    if (ImGui::BeginMenu("图表")) {
+      if (ImGui::MenuItem("求解器", "F9")) {
         tmp_.chart_solver = !tmp_.chart_solver;
       }
-      if (ImGui::MenuItem("Performance", "F10")) {
+      if (ImGui::MenuItem("性能", "F10")) {
         tmp_.chart_performance = !tmp_.chart_performance;
       }
       ImGui::EndMenu();
     }
-    if (ImGui::BeginMenu("Plugins")) {
+    if (ImGui::BeginMenu("插件")) {
       // Placeholder menu item that will be populated by plugins later on. We
       // do this now in so that the menu is present at the right place.
       ImGui::EndMenu();
     }
-    if (ImGui::BeginMenu("Help")) {
-      if (ImGui::MenuItem("Help", "F1", tmp_.help)) {
+    if (ImGui::BeginMenu("帮助")) {
+      if (ImGui::MenuItem("帮助", "F1", tmp_.help)) {
         ToggleWindow(tmp_.help);
       }
-      if (ImGui::MenuItem("Stats", "F2", tmp_.stats)) {
+      if (ImGui::MenuItem("统计", "F2", tmp_.stats)) {
         ToggleWindow(tmp_.stats);
       }
       ImGui::Separator();
-      if (ImGui::MenuItem("Style Editor", "", tmp_.style_editor)) {
+      if (ImGui::MenuItem("样式编辑器", "", tmp_.style_editor)) {
         tmp_.style_editor = !tmp_.style_editor;
       }
       ImGui::Separator();
-      if (ImGui::MenuItem("ImGui Demo")) {
+      if (ImGui::MenuItem("ImGui 示例")) {
         tmp_.imgui_demo = !tmp_.imgui_demo;
       }
-      if (ImGui::MenuItem("ImPlot Demo")) {
+      if (ImGui::MenuItem("ImPlot 示例")) {
         tmp_.implot_demo = !tmp_.implot_demo;
       }
       ImGui::Separator();
-      std::string version = "Version " + std::string(mj_versionString());
+      std::string version = "版本 " + std::string(mj_versionString());
       ImGui::MenuItem(version.c_str());
       ImGui::EndMenu();
     }
