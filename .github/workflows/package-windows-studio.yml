@@ -61,6 +61,10 @@ jobs:
           Get-ChildItem $bin -Filter "*.dll" -File | ForEach-Object {
             Copy-Item $_.FullName $stage -Force
           }
+          # Also gather DLLs from the broader build tree to avoid missing runtime deps.
+          Get-ChildItem (Join-Path $PWD "build") -Filter "*.dll" -File -Recurse | ForEach-Object {
+            Copy-Item $_.FullName $stage -Force
+          }
 
           # VC runtime DLLs workaround (same as upstream CI).
           $msvcRoot = (Get-ChildItem -Directory -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Redist\MSVC\14.*" |
@@ -80,26 +84,30 @@ jobs:
         shell: powershell
         run: |
           $stage = Join-Path $env:RUNNER_TEMP "mujoco-studio-windows-x64"
-          $bat = Join-Path $stage "run_studio_zh.bat"
-          $lines = @(
+          $bat = Join-Path $stage "run_studio_zh_safe.bat"
+          $safeLines = @(
+            '@echo off',
+            'setlocal',
+            'if not defined MUJOCO_CJK_FONT set MUJOCO_CJK_FONT=C:\Windows\Fonts\msyh.ttc',
+            'cd /d "%~dp0"',
+            'echo [%date% %time%] launching mujoco_studio.exe --gfx=opengl > studio_launch.log',
+            '"%~dp0mujoco_studio.exe" --gfx=opengl >> studio_launch.log 2>&1',
+            'echo exit_code=%errorlevel%>> studio_launch.log'
+          )
+          $safeLines | Set-Content -Path $bat -Encoding ascii
+
+          $bat2 = Join-Path $stage "run_studio_zh_default.bat"
+          $defaultLines = @(
             '@echo off',
             'setlocal',
             'if not defined MUJOCO_CJK_FONT set MUJOCO_CJK_FONT=C:\Windows\Fonts\msyh.ttc',
             'start "" /D "%~dp0" "%~dp0mujoco_studio.exe"'
           )
-          $lines | Set-Content -Path $bat -Encoding ascii
-
-      - name: Create zip
-        shell: powershell
-        run: |
-          $stage = Join-Path $env:RUNNER_TEMP "mujoco-studio-windows-x64"
-          $zip = Join-Path $env:RUNNER_TEMP "mujoco-studio-windows-x64.zip"
-          if (Test-Path $zip) { Remove-Item $zip -Force }
-          Compress-Archive -Path (Join-Path $stage "*") -DestinationPath $zip -CompressionLevel Optimal
+          $defaultLines | Set-Content -Path $bat2 -Encoding ascii
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: mujoco-studio-windows-x64
-          path: ${{ runner.temp }}/mujoco-studio-windows-x64.zip
+          path: ${{ runner.temp }}/mujoco-studio-windows-x64
           if-no-files-found: error
