@@ -429,6 +429,7 @@ void StateGui(const mjModel* model, mjData* data, std::vector<mjtNum>& state,
       {"QPOS", "Position"},
       {"QVEL", "Velocity"},
       {"ACT", "Actuator activation"},
+      {"HISTORY", "History buffers (control, sensor)"},
       {"WARMSTART", "Acceleration used for warmstart"},
       {"CTRL", "Control"},
       {"QFRC_APPLIED", "Applied generalized force"},
@@ -439,6 +440,8 @@ void StateGui(const mjModel* model, mjData* data, std::vector<mjtNum>& state,
       {"USERDATA", "User data"},
       {"PLUGIN", "Plugin state"},
   };
+  static_assert(std::size(name_and_tooltip) == mjNSTATE,
+                "State labels must match mjNSTATE.");
 
   int prev_state_sig = state_sig;
 
@@ -570,7 +573,7 @@ void WatchGui(const mjModel* model, const mjData* data, char* field_name,
   if (value) {
     char buf[100];
     int size = std::snprintf(buf, sizeof(buf), "%0.3f", *value);
-    ImGui::InputText("数值", buf, size, ImGuiInputTextFlags_ReadOnly);
+    ImGui::InputText("数值", buf, size + 1, ImGuiInputTextFlags_ReadOnly);
   } else {
     ImGui::BeginDisabled();
     style.Color(ImGuiCol_Text, ImColor(255, 0, 0, 255));
@@ -594,16 +597,16 @@ void PhysicsGui(mjModel* model, float min_width) {
   auto& opt = model->opt;
 
   const char* opts0[] = {"Euler", "RK4", "implicit", "implicitfast"};
-  ImGui::Combo("Integrator", &opt.integrator, opts0, IM_ARRAYSIZE(opts0));
+  ImGui::Combo("积分器", &opt.integrator, opts0, IM_ARRAYSIZE(opts0));
 
   const char* opts1[] = {"Pyramidal", "Elliptic"};
-  ImGui::Combo("Cone", &opt.cone, opts1, IM_ARRAYSIZE(opts1));
+  ImGui::Combo("锥模型", &opt.cone, opts1, IM_ARRAYSIZE(opts1));
 
   const char* opts2[] = {"Dense", "Sparse", "Auto"};
-  ImGui::Combo("Jacobian", &opt.jacobian, opts2, IM_ARRAYSIZE(opts2));
+  ImGui::Combo("雅可比", &opt.jacobian, opts2, IM_ARRAYSIZE(opts2));
 
   const char* opts3[] = {"PGS", "CG", "Newton"};
-  ImGui::Combo("Solver", &opt.solver, opts3, IM_ARRAYSIZE(opts3));
+  ImGui::Combo("求解器", &opt.solver, opts3, IM_ARRAYSIZE(opts3));
 
   if (ImGui::TreeNodeEx("标志###Flags", ImGuiTreeNodeFlags_DefaultOpen)) {
     if (ImGui::BeginTable("##PhysicsFlagsTable", num_cols)) {
@@ -644,36 +647,36 @@ void PhysicsGui(mjModel* model, float min_width) {
   };
 
   if (ImGui::TreeNodeEx("算法参数###Algorithmic Parameters")) {
-    ImGui_Input("Timestep", &opt.timestep, {0, 1, 0.01, 0.1});
-    ImGui_Input("Iterations", &opt.iterations, {0, 1000, 1, 10});
-    ImGui_Input("Tolerance", &opt.tolerance, {0, 1, 1e-7, 1e-6});
-    ImGui_Input("LS Iter", &opt.ls_iterations, {0, 100, 1, 0.1});
-    ImGui_Input("LS Tol", &opt.ls_tolerance, {0, 0.1, 0.01, 0.1});
-    ImGui_Input("Noslip Iter", &opt.noslip_iterations, {0, 1000, 1, 100});
-    ImGui_Input("Noslip Tol", &opt.noslip_tolerance, {0, 1, 0.01, 0.1});
-    ImGui_Input("CCD Iter", &opt.ccd_iterations, {0, 1000, 1, 100});
-    ImGui_Input("CCD Tol", &opt.ccd_tolerance, {0, 1, 0.01, 0.1});
-    ImGui_Input("Sleep Tol", &opt.sleep_tolerance, {0, 1, 0.01, 0.1});
-    ImGui_Input("SDF Iter", &opt.sdf_iterations, {1, 20, 1, 10});
-    ImGui_Input("SDF Init", &opt.sdf_initpoints, {1, 100, 1, 10});
+    ImGui_Input("时间步", &opt.timestep, {0, 1, 0.01, 0.1});
+    ImGui_Input("迭代次数", &opt.iterations, {0, 1000, 1, 10});
+    ImGui_Input("容差", &opt.tolerance, {0, 1, 1e-7, 1e-6});
+    ImGui_Input("LS 迭代", &opt.ls_iterations, {0, 100, 1, 0.1});
+    ImGui_Input("LS 容差", &opt.ls_tolerance, {0, 0.1, 0.01, 0.1});
+    ImGui_Input("无滑移迭代", &opt.noslip_iterations, {0, 1000, 1, 100});
+    ImGui_Input("无滑移容差", &opt.noslip_tolerance, {0, 1, 0.01, 0.1});
+    ImGui_Input("CCD 迭代", &opt.ccd_iterations, {0, 1000, 1, 100});
+    ImGui_Input("CCD 容差", &opt.ccd_tolerance, {0, 1, 0.01, 0.1});
+    ImGui_Input("休眠容差", &opt.sleep_tolerance, {0, 1, 0.01, 0.1});
+    ImGui_Input("SDF 迭代", &opt.sdf_iterations, {1, 20, 1, 10});
+    ImGui_Input("SDF 初始点", &opt.sdf_initpoints, {1, 100, 1, 10});
     ImGui::TreePop();
   }
 
   if (ImGui::TreeNodeEx("物理参数###Physical Parameters")) {
-    ImGui_InputN("Gravity", opt.gravity, 3);
-    ImGui_InputN("Wind", opt.wind, 3);
-    ImGui_InputN("Magnetic", opt.magnetic, 3);
-    ImGui_Input("Density", &opt.density, {.min = .1, .max = 1});
-    ImGui_Input("Viscosity", &opt.viscosity, {.min = .1, .max = 10});
-    ImGui_Input("Imp Ratio", &opt.impratio, {.min = .1, .max = 1});
+    ImGui_InputN("重力", opt.gravity, 3);
+    ImGui_InputN("风", opt.wind, 3);
+    ImGui_InputN("磁场", opt.magnetic, 3);
+    ImGui_Input("密度", &opt.density, {.min = .1, .max = 1});
+    ImGui_Input("黏度", &opt.viscosity, {.min = .1, .max = 10});
+    ImGui_Input("阻抗比", &opt.impratio, {.min = .1, .max = 1});
     ImGui::TreePop();
   };
 
   if (ImGui::TreeNodeEx("接触覆盖###Contact Override")) {
-    ImGui_Input("Margin", &opt.o_margin, {.min = 0.1, .max = 1});
-    ImGui_InputN("Sol Imp", opt.o_solimp, 5, {.format = "%0.1f"});
-    ImGui_InputN("Sol Ref", opt.o_solref, 2, {.format = "%0.1f"});
-    ImGui_InputN("Friction", opt.o_friction, 5, {.format = "%.1f"});
+    ImGui_Input("边距", &opt.o_margin, {.min = 0.1, .max = 1});
+    ImGui_InputN("求解阻抗", opt.o_solimp, 5, {.format = "%0.1f"});
+    ImGui_InputN("求解参考", opt.o_solref, 2, {.format = "%0.1f"});
+    ImGui_InputN("摩擦", opt.o_friction, 5, {.format = "%.1f"});
     ImGui::TreePop();
   }
 
@@ -688,100 +691,100 @@ void VisualizationGui(mjModel* model, mjvOption* vis_options, mjvCamera* camera,
   const float item_width = ImGui::GetWindowWidth() * .6f;
   ImGui::PushItemWidth(item_width);
 
-  ImGui::SliderInt("Tree depth", &vis_options->bvh_depth, 0, 20);
-  ImGui::SliderInt("Flex layer", &vis_options->flex_layer, 0, 10);
+  ImGui::SliderInt("树深度", &vis_options->bvh_depth, 0, 20);
+  ImGui::SliderInt("柔体层级", &vis_options->flex_layer, 0, 10);
 
-  if (ImGui::TreeNodeEx("Headlight")) {
-    ImGui_SwitchToggle("Active", &vis.headlight.active);
-    ImGui::ColorEdit3("Ambient", vis.headlight.ambient);
-    ImGui::ColorEdit3("Diffuse", vis.headlight.diffuse);
-    ImGui::ColorEdit3("Specular", vis.headlight.specular);
+  if (ImGui::TreeNodeEx("头灯")) {
+    ImGui_SwitchToggle("启用", &vis.headlight.active);
+    ImGui::ColorEdit3("环境光", vis.headlight.ambient);
+    ImGui::ColorEdit3("漫反射", vis.headlight.diffuse);
+    ImGui::ColorEdit3("高光", vis.headlight.specular);
     ImGui::TreePop();
   }
-  if (ImGui::TreeNodeEx("Free Camera")) {
-    ImGui_SwitchToggle("Orthographic", &vis.global.orthographic);
-    ImGui_Input("FOV", &vis.global.fovy, {.format = "%0.2f"});
-    ImGui_InputN("Center", stat.center, 3, {.format = "%0.2f"});
-    ImGui_Input("Azimuth", &vis.global.azimuth, {.format = "%0.2f"});
-    ImGui_Input("Elevation", &vis.global.elevation, {.format = "%0.2f"});
-    if (ImGui::Button("Align")) {
+  if (ImGui::TreeNodeEx("自由相机")) {
+    ImGui_SwitchToggle("正交", &vis.global.orthographic);
+    ImGui_Input("视场角", &vis.global.fovy, {.format = "%0.2f"});
+    ImGui_InputN("中心", stat.center, 3, {.format = "%0.2f"});
+    ImGui_Input("方位角", &vis.global.azimuth, {.format = "%0.2f"});
+    ImGui_Input("俯仰角", &vis.global.elevation, {.format = "%0.2f"});
+    if (ImGui::Button("对齐")) {
       mjv_defaultFreeCamera(model, camera);
     }
     ImGui::TreePop();
   }
-  if (ImGui::TreeNodeEx("Global")) {
-    ImGui_Input("Extent", &stat.extent);
+  if (ImGui::TreeNodeEx("全局")) {
+    ImGui_Input("范围", &stat.extent);
     const char* opts[] = {"Box", "Ellipsoid"};
-    ImGui::SliderInt("Inertia", &vis.global.ellipsoidinertia, 0, 1,
+    ImGui::SliderInt("惯量", &vis.global.ellipsoidinertia, 0, 1,
                      opts[vis.global.ellipsoidinertia]);
-    ImGui_ButtonToggle("BVH active", &vis.global.bvactive);
+    ImGui_ButtonToggle("BVH 启用", &vis.global.bvactive);
     ImGui::TreePop();
   }
-  if (ImGui::TreeNodeEx("Mapping")) {
+  if (ImGui::TreeNodeEx("映射")) {
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.3f);
-    ImGui_Input("Stiffness", &vis.map.stiffness);
-    ImGui_Input("Rot stiffness", &vis.map.stiffnessrot);
-    ImGui_Input("Force", &vis.map.force);
-    ImGui_Input("Torque", &vis.map.torque);
+    ImGui_Input("刚度", &vis.map.stiffness);
+    ImGui_Input("旋转刚度", &vis.map.stiffnessrot);
+    ImGui_Input("力", &vis.map.force);
+    ImGui_Input("力矩", &vis.map.torque);
     ImGui_Input("Alpha", &vis.map.alpha);
-    ImGui_Input("Fog start", &vis.map.fogstart);
-    ImGui_Input("Fog end", &vis.map.fogend);
-    ImGui_Input("Z near", &vis.map.znear);
-    ImGui_Input("Z far", &vis.map.zfar);
-    ImGui_Input("Haze", &vis.map.haze);
-    ImGui_Input("Shadow clip", &vis.map.shadowclip);
-    ImGui_Input("Shadow scale", &vis.map.shadowscale);
+    ImGui_Input("雾起始", &vis.map.fogstart);
+    ImGui_Input("雾结束", &vis.map.fogend);
+    ImGui_Input("近裁剪", &vis.map.znear);
+    ImGui_Input("远裁剪", &vis.map.zfar);
+    ImGui_Input("霾", &vis.map.haze);
+    ImGui_Input("阴影裁剪", &vis.map.shadowclip);
+    ImGui_Input("阴影缩放", &vis.map.shadowscale);
     ImGui::PopItemWidth();
     ImGui::TreePop();
   }
-  if (ImGui::TreeNodeEx("Scale")) {
+  if (ImGui::TreeNodeEx("缩放")) {
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.3f);
-    ImGui_Input("All (meansize)", &stat.meansize, {.format = "%0.3f"});
-    ImGui_Input("Force width", &vis.scale.forcewidth);
-    ImGui_Input("Contact width", &vis.scale.contactwidth);
-    ImGui_Input("Contact height", &vis.scale.contactheight);
-    ImGui_Input("Connect", &vis.scale.connect);
+    ImGui_Input("全局 (均值尺寸)", &stat.meansize, {.format = "%0.3f"});
+    ImGui_Input("力宽度", &vis.scale.forcewidth);
+    ImGui_Input("接触宽度", &vis.scale.contactwidth);
+    ImGui_Input("接触高度", &vis.scale.contactheight);
+    ImGui_Input("连接", &vis.scale.connect);
     ImGui_Input("Com", &vis.scale.com);
-    ImGui_Input("Camera", &vis.scale.camera);
-    ImGui_Input("Light", &vis.scale.light);
-    ImGui_Input("Select point", &vis.scale.selectpoint);
-    ImGui_Input("Joint length", &vis.scale.jointlength);
-    ImGui_Input("Joint width", &vis.scale.jointwidth);
-    ImGui_Input("Actuator length", &vis.scale.actuatorlength);
-    ImGui_Input("Actuator width", &vis.scale.actuatorwidth);
-    ImGui_Input("Frame length", &vis.scale.framelength);
-    ImGui_Input("Frame width", &vis.scale.framewidth);
-    ImGui_Input("Constraint", &vis.scale.constraint);
-    ImGui_Input("Slider-crank", &vis.scale.slidercrank);
+    ImGui_Input("相机", &vis.scale.camera);
+    ImGui_Input("光源", &vis.scale.light);
+    ImGui_Input("选中点", &vis.scale.selectpoint);
+    ImGui_Input("关节长度", &vis.scale.jointlength);
+    ImGui_Input("关节宽度", &vis.scale.jointwidth);
+    ImGui_Input("执行器长度", &vis.scale.actuatorlength);
+    ImGui_Input("执行器宽度", &vis.scale.actuatorwidth);
+    ImGui_Input("坐标轴长度", &vis.scale.framelength);
+    ImGui_Input("坐标轴宽度", &vis.scale.framewidth);
+    ImGui_Input("约束", &vis.scale.constraint);
+    ImGui_Input("曲柄滑块", &vis.scale.slidercrank);
     ImGui::PopItemWidth();
     ImGui::TreePop();
   }
-  if (ImGui::TreeNodeEx("Colors")) {
-    ImGui::ColorEdit4("Fog", vis.rgba.fog);
-    ImGui::ColorEdit4("Haze", vis.rgba.haze);
-    ImGui::ColorEdit4("Force", vis.rgba.force);
-    ImGui::ColorEdit4("Inertia", vis.rgba.inertia);
-    ImGui::ColorEdit4("Joint", vis.rgba.joint);
-    ImGui::ColorEdit4("Actuator", vis.rgba.actuator);
-    ImGui::ColorEdit4("Act. Negative", vis.rgba.actuatornegative);
-    ImGui::ColorEdit4("Act. Positive", vis.rgba.actuatorpositive);
-    ImGui::ColorEdit4("Center of Mass", vis.rgba.com);
-    ImGui::ColorEdit4("Camera", vis.rgba.camera);
-    ImGui::ColorEdit4("Light", vis.rgba.light);
-    ImGui::ColorEdit4("Select Point", vis.rgba.selectpoint);
-    ImGui::ColorEdit4("Auto Connect", vis.rgba.connect);
-    ImGui::ColorEdit4("Contact Point", vis.rgba.contactpoint);
-    ImGui::ColorEdit4("Contact Force", vis.rgba.contactforce);
-    ImGui::ColorEdit4("Contact Friction", vis.rgba.contactfriction);
-    ImGui::ColorEdit4("Contact Torque", vis.rgba.contacttorque);
-    ImGui::ColorEdit4("Contact Gap", vis.rgba.contactgap);
-    ImGui::ColorEdit4("Range Finder", vis.rgba.rangefinder);
-    ImGui::ColorEdit4("Constraint", vis.rgba.constraint);
-    ImGui::ColorEdit4("Slider Crank", vis.rgba.slidercrank);
-    ImGui::ColorEdit4("Crank Broken", vis.rgba.crankbroken);
-    ImGui::ColorEdit4("Frustum", vis.rgba.frustum);
-    ImGui::ColorEdit4("Bounding Vol.", vis.rgba.bv);
-    ImGui::ColorEdit4("BV Active", vis.rgba.bvactive);
+  if (ImGui::TreeNodeEx("颜色")) {
+    ImGui::ColorEdit4("雾", vis.rgba.fog);
+    ImGui::ColorEdit4("霾", vis.rgba.haze);
+    ImGui::ColorEdit4("力", vis.rgba.force);
+    ImGui::ColorEdit4("惯量", vis.rgba.inertia);
+    ImGui::ColorEdit4("关节", vis.rgba.joint);
+    ImGui::ColorEdit4("执行器", vis.rgba.actuator);
+    ImGui::ColorEdit4("执行器负", vis.rgba.actuatornegative);
+    ImGui::ColorEdit4("执行器正", vis.rgba.actuatorpositive);
+    ImGui::ColorEdit4("质心", vis.rgba.com);
+    ImGui::ColorEdit4("相机", vis.rgba.camera);
+    ImGui::ColorEdit4("光源", vis.rgba.light);
+    ImGui::ColorEdit4("选中点", vis.rgba.selectpoint);
+    ImGui::ColorEdit4("自动连接", vis.rgba.connect);
+    ImGui::ColorEdit4("接触点", vis.rgba.contactpoint);
+    ImGui::ColorEdit4("接触力", vis.rgba.contactforce);
+    ImGui::ColorEdit4("接触摩擦", vis.rgba.contactfriction);
+    ImGui::ColorEdit4("接触力矩", vis.rgba.contacttorque);
+    ImGui::ColorEdit4("接触间隙", vis.rgba.contactgap);
+    ImGui::ColorEdit4("测距", vis.rgba.rangefinder);
+    ImGui::ColorEdit4("约束", vis.rgba.constraint);
+    ImGui::ColorEdit4("曲柄滑块", vis.rgba.slidercrank);
+    ImGui::ColorEdit4("曲柄断裂", vis.rgba.crankbroken);
+    ImGui::ColorEdit4("视锥", vis.rgba.frustum);
+    ImGui::ColorEdit4("包围体", vis.rgba.bv);
+    ImGui::ColorEdit4("BV 激活", vis.rgba.bvactive);
     ImGui::TreePop();
   }
 
@@ -795,7 +798,7 @@ void RenderingGui(const mjModel* model, mjvOption* vis_options,
   const int num_cols = std::clamp(
       static_cast<int>(std::floor(available_width / min_width)), 1, 6);
 
-  if (ImGui::TreeNodeEx("Model Elements", ImGuiTreeNodeFlags_DefaultOpen)) {
+  if (ImGui::TreeNodeEx("模型元素", ImGuiTreeNodeFlags_DefaultOpen)) {
     ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing() / 2);
 
     if (ImGui::BeginTable("##ModelElementsTable", num_cols)) {
@@ -811,7 +814,7 @@ void RenderingGui(const mjModel* model, mjvOption* vis_options,
     ImGui::TreePop();
   }
 
-  if (ImGui::TreeNodeEx("Render Flags", ImGuiTreeNodeFlags_DefaultOpen)) {
+  if (ImGui::TreeNodeEx("渲染标志", ImGuiTreeNodeFlags_DefaultOpen)) {
     ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing() / 2);
 
     if (ImGui::BeginTable("##RenderFlagsTable", num_cols)) {
@@ -860,21 +863,21 @@ void GroupsGui(const mjModel* model, mjvOption* vis_options, float min_width) {
     }
   };
 
-  GroupGui("Geoms", vis_options->geomgroup);
-  GroupGui("Sites", vis_options->sitegroup);
-  GroupGui("Joints", vis_options->jointgroup);
-  GroupGui("Tendons", vis_options->tendongroup);
-  GroupGui("Actuators", vis_options->actuatorgroup);
-  GroupGui("Flexes", vis_options->flexgroup);
-  GroupGui("Skins", vis_options->skingroup);
+  GroupGui("几何体", vis_options->geomgroup);
+  GroupGui("位点", vis_options->sitegroup);
+  GroupGui("关节", vis_options->jointgroup);
+  GroupGui("肌腱", vis_options->tendongroup);
+  GroupGui("执行器", vis_options->actuatorgroup);
+  GroupGui("柔体", vis_options->flexgroup);
+  GroupGui("蒙皮", vis_options->skingroup);
 }
 
 void NoiseGui(const mjModel* model, const mjData* data, float& noise_scale,
               float& noise_rate) {
   const float item_width = ImGui::GetWindowWidth() * .6f;
   ImGui::PushItemWidth(item_width);
-  ImGui::SliderFloat("Scale", &noise_scale, 0, 1);
-  ImGui::SliderFloat("Rate", &noise_rate, 0, 4);
+  ImGui::SliderFloat("幅度", &noise_scale, 0, 1);
+  ImGui::SliderFloat("速率", &noise_rate, 0, 4);
   ImGui::PopItemWidth();
 }
 
@@ -898,7 +901,7 @@ void JointsGui(const mjModel* model, const mjData* data,
     if (*jnt_name) {
       std::snprintf(name, sizeof(name), "%s", jnt_name);
     } else {
-      std::snprintf(name, sizeof(name), "joint %d", i);
+      std::snprintf(name, sizeof(name), "关节 %d", i);
     }
 
     double min = -1.0;
@@ -945,7 +948,7 @@ void ControlsGui(const mjModel* model, const mjData* data,
     if (*ctrl_name) {
       std::snprintf(name, sizeof(name), "%s", ctrl_name);
     } else {
-      std::snprintf(name, sizeof(name), "control %d", i);
+      std::snprintf(name, sizeof(name), "控制 %d", i);
     }
 
     double min = -1.0;

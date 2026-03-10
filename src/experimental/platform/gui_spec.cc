@@ -202,12 +202,12 @@ static void BodyTreeGuiRecursive(mjsElement** element, mjsBody* body,
       iter = next;
     }
 
-    BodyChildrenGui("Frames", mjOBJ_FRAME, element, body, editor);
-    BodyChildrenGui("Sites", mjOBJ_SITE, element, body, editor);
-    BodyChildrenGui("Joints", mjOBJ_JOINT, element, body, editor);
-    BodyChildrenGui("Geoms", mjOBJ_GEOM, element, body, editor);
-    BodyChildrenGui("Lights", mjOBJ_LIGHT, element, body, editor);
-    BodyChildrenGui("Cameras", mjOBJ_CAMERA, element, body, editor);
+    BodyChildrenGui("坐标系", mjOBJ_FRAME, element, body, editor);
+    BodyChildrenGui("位点", mjOBJ_SITE, element, body, editor);
+    BodyChildrenGui("关节", mjOBJ_JOINT, element, body, editor);
+    BodyChildrenGui("几何体", mjOBJ_GEOM, element, body, editor);
+    BodyChildrenGui("光源", mjOBJ_LIGHT, element, body, editor);
+    BodyChildrenGui("相机", mjOBJ_CAMERA, element, body, editor);
     ImGui::TreePop();
   }
   ImGui::PopID();
@@ -222,7 +222,7 @@ void SpecTreeGui(mjsElement** element, mjSpec* spec, SpecEditor* editor) {
   style.Var(ImGuiStyleVar_FramePadding, ImVec2(4, 0));
   style.Color(ImGuiCol_Border, ImGuiCol_WindowBg);
 
-  if (ImGui::TreeNodeEx("Body Tree", flags)) {
+  if (ImGui::TreeNodeEx("刚体树", flags)) {
     mjsElement* root = mjs_firstElement(spec, mjOBJ_BODY);
     if (root) {
       mjsBody* body = mjs_asBody(root);
@@ -240,29 +240,29 @@ void SpecTreeGui(mjsElement** element, mjSpec* spec, SpecEditor* editor) {
   ImGui::PushID("$spec$");
 
   // Non-tree elements.
-  if (ImGui::TreeNodeEx("Elements", flags)) {
-    list("Actuators", mjOBJ_ACTUATOR);
-    list("Sensors", mjOBJ_SENSOR);
-    list("Flexes", mjOBJ_FLEX);
-    list("Tendons", mjOBJ_TENDON);
-    list("Pair", mjOBJ_PAIR);
-    list("Exclude", mjOBJ_EXCLUDE);
-    list("Equality", mjOBJ_EQUALITY);
-    list("Numeric", mjOBJ_NUMERIC);
-    list("Text", mjOBJ_TEXT);
-    list("Tuple", mjOBJ_TUPLE);
-    list("Key", mjOBJ_KEY);
-    list("Default", mjOBJ_DEFAULT);
+  if (ImGui::TreeNodeEx("元素", flags)) {
+    list("执行器", mjOBJ_ACTUATOR);
+    list("传感器", mjOBJ_SENSOR);
+    list("柔体", mjOBJ_FLEX);
+    list("肌腱", mjOBJ_TENDON);
+    list("碰撞对", mjOBJ_PAIR);
+    list("排除", mjOBJ_EXCLUDE);
+    list("等式约束", mjOBJ_EQUALITY);
+    list("数值", mjOBJ_NUMERIC);
+    list("文本", mjOBJ_TEXT);
+    list("元组", mjOBJ_TUPLE);
+    list("关键帧", mjOBJ_KEY);
+    list("默认", mjOBJ_DEFAULT);
     ImGui::TreePop();
   }
 
   // Assets.
-  if (ImGui::TreeNodeEx("Assets", flags)) {
-    list("Meshes", mjOBJ_MESH);
-    list("Height Fields", mjOBJ_HFIELD);
-    list("Skins", mjOBJ_SKIN);
-    list("Textures", mjOBJ_TEXTURE);
-    list("Materials", mjOBJ_MATERIAL);
+  if (ImGui::TreeNodeEx("资源", flags)) {
+    list("网格", mjOBJ_MESH);
+    list("高度场", mjOBJ_HFIELD);
+    list("蒙皮", mjOBJ_SKIN);
+    list("纹理", mjOBJ_TEXTURE);
+    list("材质", mjOBJ_MATERIAL);
     ImGui::TreePop();
   }
 

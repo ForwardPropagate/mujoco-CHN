@@ -1227,7 +1227,7 @@ void App::SpecEditorGui() {
 
       ImGui::TableNextColumn();
       ImGui::PushStyleColor(ImGuiCol_Button, ImColor(40, 180, 40, 255).Value);
-      if (ImGui::Button("Compile and Reload", ImVec2(-1, 0))) {
+      if (ImGui::Button("编译并重载", ImVec2(-1, 0))) {
         pending_op_ = [this]() {
           auto tmp_holder = spec_editor_.Compile();
           if (tmp_holder->ok()) {
@@ -1252,22 +1252,22 @@ void App::SpecEditorGui() {
           }
         };
 
-        option("Actuator", mjOBJ_ACTUATOR);
-        option("Equality", mjOBJ_EQUALITY);
-        option("Exclude", mjOBJ_EXCLUDE);
-        option("Flex", mjOBJ_FLEX);
-        option("Height Field", mjOBJ_HFIELD);
-        option("Key", mjOBJ_KEY);
-        option("Material", mjOBJ_MATERIAL);
-        option("Mesh", mjOBJ_MESH);
-        option("Numeric", mjOBJ_NUMERIC);
-        option("Pair", mjOBJ_PAIR);
-        option("Sensor", mjOBJ_SENSOR);
-        option("Skin", mjOBJ_SKIN);
-        option("Tendon", mjOBJ_TENDON);
-        option("Text", mjOBJ_TEXT);
-        option("Texture", mjOBJ_TEXTURE);
-        option("Tuple", mjOBJ_TUPLE);
+        option("执行器", mjOBJ_ACTUATOR);
+        option("等式约束", mjOBJ_EQUALITY);
+        option("排除对", mjOBJ_EXCLUDE);
+        option("柔体", mjOBJ_FLEX);
+        option("高度场", mjOBJ_HFIELD);
+        option("关键帧", mjOBJ_KEY);
+        option("材质", mjOBJ_MATERIAL);
+        option("网格", mjOBJ_MESH);
+        option("数值", mjOBJ_NUMERIC);
+        option("碰撞对", mjOBJ_PAIR);
+        option("传感器", mjOBJ_SENSOR);
+        option("蒙皮", mjOBJ_SKIN);
+        option("肌腱", mjOBJ_TENDON);
+        option("文本", mjOBJ_TEXT);
+        option("纹理", mjOBJ_TEXTURE);
+        option("元组", mjOBJ_TUPLE);
         ImGui::EndPopup();
       }
 

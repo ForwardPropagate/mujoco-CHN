@@ -114,8 +114,10 @@ jobs:
           $defaultLines = @(
             '@echo off',
             'setlocal',
+            'chcp 65001 >nul',
             'if not defined MUJOCO_CJK_FONT set MUJOCO_CJK_FONT=C:\Windows\Fonts\msyh.ttc',
-            'start "" /D "%~dp0" "%~dp0mujoco_studio.exe"'
+            'cd /d "%~dp0"',
+            'call "%~dp0run_studio_zh_safe.bat"'
           )
           $defaultLines | Set-Content -Path $bat2 -Encoding ascii
 
