@@ -95,13 +95,13 @@ static constexpr const char* ICON_REDO_SPEC = platform::ICON_FA_REPEAT;
 
 // UI labels for mjtLabel.
 static constexpr const char* kLabelNames[] = {
-    "None",      "Body",    "Joint",    "Geom",       "Site",  "Camera",
-    "Light",     "Tendon",  "Actuator", "Constraint", "Flex",  "Skin",
-    "Selection", "Sel Pnt", "Contact",  "Force",      "Island"};
+    "无",        "刚体",    "关节",     "几何体",     "位点",  "相机",
+    "光源",      "肌腱",    "执行器",   "约束",       "柔体",  "蒙皮",
+    "选中",      "选点",    "接触",     "力",         "岛"};
 
 // UI labels for mjtFrame.
 static constexpr const char* kFrameNames[] = {
-    "None", "Body", "Geom", "Site", "Camera", "Light", "Contact", "World"};
+    "无", "刚体", "几何体", "位点", "相机", "光源", "接触", "世界"};
 
 // logarithmically spaced real-time slow-down coefficients (percent)
 // clang-format off
@@ -879,24 +879,24 @@ void App::BuildGui() {
   }
 
   if (tmp_.options_panel) {
-    if (ImGui::Begin("Options", &tmp_.options_panel)) {
+    if (ImGui::Begin("选项###Options", &tmp_.options_panel)) {
       ModelOptionsGui();
     }
     ImGui::End();
   }
 
   if (tmp_.inspector_panel) {
-    if (ImGui::Begin("Inspector", &tmp_.inspector_panel)) {
+    if (ImGui::Begin("检查器###Inspector", &tmp_.inspector_panel)) {
       DataInspectorGui();
     }
     ImGui::End();
 
-    if (ImGui::Begin("Explorer", &tmp_.inspector_panel)) {
+    if (ImGui::Begin("浏览器###Explorer", &tmp_.inspector_panel)) {
       SpecExplorerGui();
     }
     ImGui::End();
 
-    if (ImGui::Begin("Editor", &tmp_.inspector_panel)) {
+    if (ImGui::Begin("编辑器###Editor", &tmp_.inspector_panel)) {
       SpecEditorGui();
     }
     ImGui::End();
@@ -905,7 +905,7 @@ void App::BuildGui() {
   if (tmp_.chart_performance) {
     ImGui::SetNextWindowPos(chart_pos, ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(chart_size, ImGuiCond_FirstUseEver);
-    if (ImGui::Begin("Performance", &tmp_.chart_performance)) {
+    if (ImGui::Begin("性能###Performance", &tmp_.chart_performance)) {
       profiler_.CpuTimeGraph();
       profiler_.DimensionsGraph();
     }
@@ -915,7 +915,7 @@ void App::BuildGui() {
   if (tmp_.chart_solver) {
     ImGui::SetNextWindowPos(chart_pos, ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(chart_size, ImGuiCond_FirstUseEver);
-    if (ImGui::Begin("Solver", &tmp_.chart_solver)) {
+    if (ImGui::Begin("求解器###Solver", &tmp_.chart_solver)) {
       platform::CountsGui(model(), data());
       platform::ConvergenceGui(model(), data());
     }
@@ -923,7 +923,7 @@ void App::BuildGui() {
   }
 
   if (tmp_.picture_in_picture) {
-    if (ImGui::Begin("Picture-in-Picture", &tmp_.picture_in_picture)) {
+    if (ImGui::Begin("画中画###Picture-in-Picture", &tmp_.picture_in_picture)) {
       PipGui(model(), data(), window_.get(), renderer_.get(), &tmp_.pips);
     }
     ImGui::End();
@@ -935,7 +935,7 @@ void App::BuildGui() {
     ImGui::SetNextWindowPos(ImVec2(workspace_rect.x, workspace_rect.y),
                             ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(400, 0), ImGuiCond_FirstUseEver);
-    if (ImGui::Begin("Help", &tmp_.help)) {
+    if (ImGui::Begin("帮助###Help", &tmp_.help)) {
       HelpGui();
     }
     ImGui::End();
@@ -944,7 +944,7 @@ void App::BuildGui() {
   if (tmp_.stats) {
     platform::ScopedStyle style;
     style.Var(ImGuiStyleVar_Alpha, 0.6f);
-    if (ImGui::Begin("Stats", &tmp_.stats)) {
+    if (ImGui::Begin("统计###Stats", &tmp_.stats)) {
       const float fps = renderer_->GetFps();
       platform::StatsGui(
           model(), data(),
@@ -956,7 +956,7 @@ void App::BuildGui() {
   // Display a drag-and-drop message if no model is loaded.
   if (model_kind_ == kEmptyModel) {
 #ifndef __EMSCRIPTEN__
-    const char* text = "Load model file or drag-and-drop model file here.";
+    const char* text = "请加载模型文件，或将模型文件拖放到此处。";
 
     const float width = window_->GetWidth() * ImGui::GetWindowDpiScale();
     const float height = window_->GetHeight() * ImGui::GetWindowDpiScale();
@@ -987,7 +987,7 @@ void App::BuildGui() {
     ImPlot::ShowDemoWindow();
   }
   if (tmp_.style_editor) {
-    if (ImGui::Begin("Style Editor", &tmp_.style_editor)) {
+    if (ImGui::Begin("样式编辑器###Style Editor", &tmp_.style_editor)) {
       ImGui::ShowStyleEditor();
     }
     ImGui::End();
@@ -998,7 +998,7 @@ void App::BuildGui() {
       return;
     }
     if (ImGui::BeginMainMenuBar()) {
-      if (ImGui::BeginMenu("Plugins")) {
+      if (ImGui::BeginMenu("插件")) {
         if (ImGui::MenuItem(plugin->name, "", plugin->active)) {
           plugin->active = !plugin->active;
         }
@@ -1040,14 +1040,14 @@ void App::ModelOptionsGui() {
       ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Framed;
 
   ImGui::BeginChild("PhysicsGui", {0, 0}, child_flags);
-  if (ImGui::TreeNodeEx("Physics Settings", node_flags)) {
+  if (ImGui::TreeNodeEx("物理设置", node_flags)) {
     platform::PhysicsGui(model(), min_width);
     ImGui::TreePop();
   }
   ImGui::EndChild();
 
   ImGui::BeginChild("RenderingGui", {0, 0}, child_flags);
-  if (ImGui::TreeNodeEx("Rendering Settings", node_flags)) {
+  if (ImGui::TreeNodeEx("渲染设置", node_flags)) {
     platform::RenderingGui(model(), &vis_options_, renderer_->GetRenderFlags(),
                            min_width);
     ImGui::TreePop();
@@ -1055,14 +1055,14 @@ void App::ModelOptionsGui() {
   ImGui::EndChild();
 
   ImGui::BeginChild("GroupsGui", {0, 0}, child_flags);
-  if (ImGui::TreeNodeEx("Visibility Groups", node_flags)) {
+  if (ImGui::TreeNodeEx("可见组", node_flags)) {
     platform::GroupsGui(model(), &vis_options_, min_width);
     ImGui::TreePop();
   }
   ImGui::EndChild();
 
   ImGui::BeginChild("VisualizationGui", {0, 0}, child_flags);
-  if (ImGui::TreeNodeEx("Visualization", node_flags)) {
+  if (ImGui::TreeNodeEx("可视化", node_flags)) {
     platform::VisualizationGui(model(), &vis_options_, &camera_, min_width);
     ImGui::TreePop();
   }
@@ -1071,7 +1071,7 @@ void App::ModelOptionsGui() {
 
 void App::DataInspectorGui() {
   if (!has_data()) {
-    ImGui::Text("No mjData loaded.");
+    ImGui::Text("未加载 mjData。");
     return;
   }
 
@@ -1082,7 +1082,7 @@ void App::DataInspectorGui() {
       ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Framed;
 
   ImGui::BeginChild("NoiseGui", {0, 0}, child_flags);
-  if (ImGui::TreeNodeEx("Noise", node_flags)) {
+  if (ImGui::TreeNodeEx("噪声", node_flags)) {
     float noise_scale = 0;
     float noise_rate = 0;
     step_control_.GetNoiseParameters(noise_scale, noise_rate);
@@ -1093,28 +1093,28 @@ void App::DataInspectorGui() {
   ImGui::EndChild();
 
   ImGui::BeginChild("JointsGui", {0, 0}, child_flags);
-  if (ImGui::TreeNodeEx("Joints", node_flags)) {
+  if (ImGui::TreeNodeEx("关节", node_flags)) {
     platform::JointsGui(model(), data(), &vis_options_);
     ImGui::TreePop();
   }
   ImGui::EndChild();
 
   ImGui::BeginChild("ControlsGui", {0, 0}, child_flags);
-  if (ImGui::TreeNodeEx("Controls", node_flags)) {
+  if (ImGui::TreeNodeEx("控制", node_flags)) {
     platform::ControlsGui(model(), data(), &vis_options_);
     ImGui::TreePop();
   }
   ImGui::EndChild();
 
   ImGui::BeginChild("SensorGui", {0, 0}, child_flags);
-  if (ImGui::TreeNodeEx("Sensor", node_flags)) {
+  if (ImGui::TreeNodeEx("传感器", node_flags)) {
     platform::SensorGui(model(), data());
     ImGui::TreePop();
   }
   ImGui::EndChild();
 
   ImGui::BeginChild("WatchGui", {0, 0}, child_flags);
-  if (ImGui::TreeNodeEx("Watch", node_flags)) {
+  if (ImGui::TreeNodeEx("监视", node_flags)) {
     platform::WatchGui(model(), data(), ui_.watch_field,
                        sizeof(ui_.watch_field), ui_.watch_index);
     ImGui::TreePop();
@@ -1122,7 +1122,7 @@ void App::DataInspectorGui() {
   ImGui::EndChild();
 
   ImGui::BeginChild("StateGui", {0, 0}, child_flags);
-  if (ImGui::TreeNodeEx("State", node_flags)) {
+  if (ImGui::TreeNodeEx("状态", node_flags)) {
     platform::StateGui(model(), data(), tmp_.state, tmp_.state_sig, min_width);
     ImGui::TreePop();
   }
@@ -1131,7 +1131,7 @@ void App::DataInspectorGui() {
 
 void App::SpecExplorerGui() {
   if (!has_spec()) {
-    ImGui::Text("No mjSpec loaded.");
+    ImGui::Text("未加载 mjSpec。");
     return;
   }
 
@@ -2015,21 +2015,21 @@ std::vector<const char*> App::GetCameraNames() {
   if (tmp_.camera_names.empty()) {
     tmp_.camera_names.reserve(model()->ncam + 3);
 
-    tmp_.camera_names.push_back("Free: tumble");
-    tmp_.camera_names.push_back("Free: wasd");
-    tmp_.camera_names.push_back("Tracking (-1)");
+    tmp_.camera_names.push_back("自由: 旋转");
+    tmp_.camera_names.push_back("自由: WASD");
+    tmp_.camera_names.push_back("跟踪 (-1)");
     for (int i = 0; i < model()->ncam; i++) {
       if (model()->names[model()->name_camadr[i]]) {
         tmp_.camera_names.push_back(model()->names + model()->name_camadr[i]);
       } else {
-        tmp_.camera_names.push_back("Unnamed");
+        tmp_.camera_names.push_back("未命名");
       }
     }
   }
 
   // Update tracking camera name as this can change over time.
   tmp_.camera_names[2] =
-      "Tracking (" + std::to_string(camera_.trackbodyid) + ")";
+      "跟踪 (" + std::to_string(camera_.trackbodyid) + ")";
 
   std::vector<const char*> names;
   names.reserve(tmp_.camera_names.size());

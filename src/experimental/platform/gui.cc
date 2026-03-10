@@ -19,6 +19,7 @@
 #include <cstdio>
 #include <limits>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include <imgui.h>
@@ -34,6 +35,37 @@ static ImVec2 GetFlexElementSize(int num_cols) {
   const float width = (ImGui::GetContentRegionAvail().x / num_cols) -
                       ImGui::GetStyle().FramePadding.x * 2;
   return ImVec2(width, 0);
+}
+
+static const char* TranslateUiLabel(std::string_view label) {
+  if (label == "Contact") return "接触";
+  if (label == "Spring") return "弹簧";
+  if (label == "Damper") return "阻尼";
+  if (label == "Gravity") return "重力";
+  if (label == "Clampctrl") return "限幅控制";
+  if (label == "Warmstart") return "热启动";
+  if (label == "Filterparent") return "父级过滤";
+  if (label == "Actuation") return "驱动";
+  if (label == "Refsafe") return "参考安全";
+  if (label == "Sensor") return "传感器";
+  if (label == "Midphase") return "中间阶段";
+  if (label == "Eulerdamp") return "欧拉阻尼";
+  if (label == "AutoReset") return "自动重置";
+  if (label == "NativeCCD") return "原生CCD";
+  if (label == "Island") return "孤岛";
+  if (label == "Override") return "覆盖";
+  if (label == "Energy") return "能量";
+  if (label == "Fwdinv") return "正逆验证";
+  if (label == "InvDiscrete") return "离散逆解";
+  if (label == "MultiCCD") return "多重CCD";
+  if (label == "Sleep") return "休眠";
+  if (label == "Flags") return "标志";
+  if (label == "Actuator Groups") return "执行器分组";
+  if (label == "Algorithmic Parameters") return "算法参数";
+  if (label == "Physical Parameters") return "物理参数";
+  if (label == "Contact Override") return "接触覆盖";
+  if (label == "Act Group") return "执行组";
+  return nullptr;
 }
 
 void SetupTheme(GuiTheme theme) {
@@ -244,12 +276,12 @@ ImVec4 ConfigureDockingLayout() {
                                 &properties, &inspector);
 
     ImGui::DockBuilderDockWindow("Dockspace", main);
-    ImGui::DockBuilderDockWindow("Options", options);
-    ImGui::DockBuilderDockWindow("Explorer", inspector);
-    ImGui::DockBuilderDockWindow("Editor", inspector);
-    ImGui::DockBuilderDockWindow("Inspector", inspector);
+    ImGui::DockBuilderDockWindow("选项###Options", options);
+    ImGui::DockBuilderDockWindow("浏览器###Explorer", inspector);
+    ImGui::DockBuilderDockWindow("编辑器###Editor", inspector);
+    ImGui::DockBuilderDockWindow("检查器###Inspector", inspector);
     ImGui::DockBuilderDockWindow("Properties", properties);
-    ImGui::DockBuilderDockWindow("Stats", stats);
+    ImGui::DockBuilderDockWindow("统计###Stats", stats);
     ImGui::DockBuilderFinish(root);
   }
 
@@ -352,7 +384,7 @@ void SensorGui(const mjModel* model, const mjData* data) {
     auto plot_lines = [](int sensor_idx, const ImPlotPoint* values, int count) {
       constexpr float bar_weight = 5.0f;
       ImPlot::SetNextLineStyle(IMPLOT_AUTO_COL, bar_weight);
-      std::string sensor_label = "Sensor " + std::to_string(sensor_idx);
+      std::string sensor_label = "传感器 " + std::to_string(sensor_idx);
       ImPlot::PlotLine(sensor_label.c_str(), &values->x, &values->y, count,
                        ImPlotLineFlags_Segments, 0, 2 * sizeof(double));
     };
@@ -427,19 +459,19 @@ void StateGui(const mjModel* model, mjData* data, std::vector<mjtNum>& state,
   // Buttons to select commonly used state signatures.
   if (ImGui::BeginTable("##CommonSignatures", num_cols)) {
     ImGui::TableNextColumn();
-    if (ImGui::Button("Physics", size)) {
+    if (ImGui::Button("物理", size)) {
       state_sig = (state_sig == mjSTATE_PHYSICS) ? 0 : mjSTATE_PHYSICS;
     }
     ImGui::TableNextColumn();
-    if (ImGui::Button("Full Physics", size)) {
+    if (ImGui::Button("完整物理", size)) {
       state_sig = (state_sig == mjSTATE_FULLPHYSICS) ? 0 : mjSTATE_FULLPHYSICS;
     }
     ImGui::TableNextColumn();
-    if (ImGui::Button("User", size)) {
+    if (ImGui::Button("用户", size)) {
       state_sig = (state_sig == mjSTATE_USER) ? 0 : mjSTATE_USER;
     }
     ImGui::TableNextColumn();
-    if (ImGui::Button("Integration", size)) {
+    if (ImGui::Button("积分", size)) {
       state_sig = (state_sig == mjSTATE_INTEGRATION) ? 0 : mjSTATE_INTEGRATION;
     }
     ImGui::EndTable();
@@ -456,8 +488,8 @@ void StateGui(const mjModel* model, mjData* data, std::vector<mjtNum>& state,
     ImGui::BeginDisabled();
     ImGui::TextWrapped(
         state_sig == 0
-            ? "No state components are selected."
-            : "Selected state components do not exist in the model.");
+            ? "未选择任何状态分量。"
+            : "所选状态分量在当前模型中不存在。");
     ImGui::EndDisabled();
   } else {
     mj_getState(model, data, state.data(), state_sig);
@@ -469,9 +501,9 @@ void StateGui(const mjModel* model, mjData* data, std::vector<mjtNum>& state,
                 ImGuiTableFlags_BordersV | ImGuiTableFlags_Resizable |
                 ImGuiTableFlags_ScrollY,
             ImVec2(0, ImGui::GetTextLineHeightWithSpacing() * 20))) {
-      ImGui::TableSetupColumn("Index");
-      ImGui::TableSetupColumn("Name");
-      ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+      ImGui::TableSetupColumn("索引");
+      ImGui::TableSetupColumn("名称");
+      ImGui::TableSetupColumn("数值", ImGuiTableColumnFlags_WidthStretch);
       ImGui::TableSetupScrollFreeze(0, 1);
       ImGui::TableHeadersRow();
 
@@ -527,8 +559,8 @@ void WatchGui(const mjModel* model, const mjData* data, char* field_name,
   const float item_width = ImGui::GetWindowWidth() * .6f;
   ImGui::PushItemWidth(item_width);
 
-  ImGui::InputText("Field", field_name, field_len);
-  ImGui::InputInt("Index", &field_index);
+  ImGui::InputText("字段", field_name, field_len);
+  ImGui::InputInt("索引", &field_index);
   const mjtNum* value = static_cast<const mjtNum*>(
       GetValue(model, data, field_name, field_index));
 
@@ -538,12 +570,12 @@ void WatchGui(const mjModel* model, const mjData* data, char* field_name,
   if (value) {
     char buf[100];
     int size = std::snprintf(buf, sizeof(buf), "%0.3f", *value);
-    ImGui::InputText("Value", buf, size, ImGuiInputTextFlags_ReadOnly);
+    ImGui::InputText("数值", buf, size, ImGuiInputTextFlags_ReadOnly);
   } else {
     ImGui::BeginDisabled();
     style.Color(ImGuiCol_Text, ImColor(255, 0, 0, 255));
-    char buf[] = "Invalid field/index!";
-    ImGui::InputText("Value", buf, sizeof(buf), ImGuiInputTextFlags_ReadOnly);
+    char buf[] = "字段/索引无效！";
+    ImGui::InputText("数值", buf, sizeof(buf), ImGuiInputTextFlags_ReadOnly);
     ImGui::EndDisabled();
   }
 
@@ -573,30 +605,34 @@ void PhysicsGui(mjModel* model, float min_width) {
   const char* opts3[] = {"PGS", "CG", "Newton"};
   ImGui::Combo("Solver", &opt.solver, opts3, IM_ARRAYSIZE(opts3));
 
-  if (ImGui::TreeNodeEx("Flags", ImGuiTreeNodeFlags_DefaultOpen)) {
+  if (ImGui::TreeNodeEx("标志###Flags", ImGuiTreeNodeFlags_DefaultOpen)) {
     if (ImGui::BeginTable("##PhysicsFlagsTable", num_cols)) {
       const ImVec2 size = GetFlexElementSize(num_cols);
       for (int i = 0; i < mjNDISABLE; ++i) {
         ImGui::TableNextColumn();
         int flipped = ~opt.disableflags;
-        ImGui_BitToggle(mjDISABLESTRING[i], &flipped, 1 << i, size);
+        const char* translated = TranslateUiLabel(mjDISABLESTRING[i]);
+        ImGui_BitToggle(translated ? translated : mjDISABLESTRING[i], &flipped,
+                        1 << i, size);
         opt.disableflags = ~flipped;
       }
       for (int i = 0; i < mjNENABLE; ++i) {
         ImGui::TableNextColumn();
-        ImGui_BitToggle(mjENABLESTRING[i], &opt.enableflags, 1 << i, size);
+        const char* translated = TranslateUiLabel(mjENABLESTRING[i]);
+        ImGui_BitToggle(translated ? translated : mjENABLESTRING[i],
+                        &opt.enableflags, 1 << i, size);
       }
       ImGui::EndTable();
     }
     ImGui::TreePop();
   }
 
-  if (ImGui::TreeNodeEx("Actuator Groups")) {
+  if (ImGui::TreeNodeEx("执行器分组###Actuator Groups")) {
     if (ImGui::BeginTable("##ActuatorGroupsTable", num_cols)) {
       const ImVec2 size = GetFlexElementSize(num_cols);
       for (int i = 0; i < 6; ++i) {
         char label[64];
-        std::snprintf(label, sizeof(label), "Act Group %d", i);
+        std::snprintf(label, sizeof(label), "执行组 %d", i);
         ImGui::TableNextColumn();
         int flipped = ~opt.disableactuator;
         ImGui_BitToggle(label, &flipped, 1 << i, size);
@@ -607,7 +643,7 @@ void PhysicsGui(mjModel* model, float min_width) {
     ImGui::TreePop();
   };
 
-  if (ImGui::TreeNodeEx("Algorithmic Parameters")) {
+  if (ImGui::TreeNodeEx("算法参数###Algorithmic Parameters")) {
     ImGui_Input("Timestep", &opt.timestep, {0, 1, 0.01, 0.1});
     ImGui_Input("Iterations", &opt.iterations, {0, 1000, 1, 10});
     ImGui_Input("Tolerance", &opt.tolerance, {0, 1, 1e-7, 1e-6});
@@ -623,7 +659,7 @@ void PhysicsGui(mjModel* model, float min_width) {
     ImGui::TreePop();
   }
 
-  if (ImGui::TreeNodeEx("Physical Parameters")) {
+  if (ImGui::TreeNodeEx("物理参数###Physical Parameters")) {
     ImGui_InputN("Gravity", opt.gravity, 3);
     ImGui_InputN("Wind", opt.wind, 3);
     ImGui_InputN("Magnetic", opt.magnetic, 3);
@@ -633,7 +669,7 @@ void PhysicsGui(mjModel* model, float min_width) {
     ImGui::TreePop();
   };
 
-  if (ImGui::TreeNodeEx("Contact Override")) {
+  if (ImGui::TreeNodeEx("接触覆盖###Contact Override")) {
     ImGui_Input("Margin", &opt.o_margin, {.min = 0.1, .max = 1});
     ImGui_InputN("Sol Imp", opt.o_solimp, 5, {.format = "%0.1f"});
     ImGui_InputN("Sol Ref", opt.o_solref, 2, {.format = "%0.1f"});
@@ -890,7 +926,7 @@ void ControlsGui(const mjModel* model, const mjData* data,
   const float item_width = ImGui::GetWindowWidth() * .6f;
   ImGui::PushItemWidth(item_width);
 
-  if (ImGui::Button("Clear All")) {
+  if (ImGui::Button("全部清零")) {
     mju_zero(data->ctrl, model->nu);
   }
 
