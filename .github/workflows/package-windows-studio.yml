@@ -88,11 +88,23 @@ jobs:
           $safeLines = @(
             '@echo off',
             'setlocal',
+            'chcp 65001 >nul',
             'if not defined MUJOCO_CJK_FONT set MUJOCO_CJK_FONT=C:\Windows\Fonts\msyh.ttc',
             'cd /d "%~dp0"',
-            'echo [%date% %time%] launching mujoco_studio.exe --gfx=opengl > studio_launch.log',
-            '"%~dp0mujoco_studio.exe" --gfx=opengl >> studio_launch.log 2>&1',
-            'echo exit_code=%errorlevel%>> studio_launch.log'
+            'set EXE=%~dp0mujoco_studio.exe',
+            'echo [%date% %time%] launching with backend fallback > studio_launch.log',
+            'echo try: vulkan>> studio_launch.log',
+            '"%EXE%" --gfx=vulkan >> studio_launch.log 2>&1',
+            'if %errorlevel%==0 goto :done',
+            'echo vulkan failed with exit_code=%errorlevel%>> studio_launch.log',
+            'echo try: opengl>> studio_launch.log',
+            '"%EXE%" --gfx=opengl >> studio_launch.log 2>&1',
+            'if %errorlevel%==0 goto :done',
+            'echo opengl failed with exit_code=%errorlevel%>> studio_launch.log',
+            'echo try: classic>> studio_launch.log',
+            '"%EXE%" --gfx=classic >> studio_launch.log 2>&1',
+            ':done',
+            'echo final_exit_code=%errorlevel%>> studio_launch.log'
           )
           $safeLines | Set-Content -Path $bat -Encoding ascii
 
