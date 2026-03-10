@@ -50,7 +50,12 @@ jobs:
           New-Item -ItemType Directory -Path $stage -Force | Out-Null
 
           $bin = Join-Path $PWD "build/bin/Release"
+          $assets = Join-Path $PWD "build/bin/assets"
           Copy-Item (Join-Path $bin "mujoco_studio.exe") $stage -Force
+
+          if (Test-Path $assets) {
+            Copy-Item $assets (Join-Path $stage "assets") -Recurse -Force
+          }
 
           # Copy all generated DLLs next to the executable.
           Get-ChildItem $bin -Filter "*.dll" -File | ForEach-Object {
@@ -80,7 +85,7 @@ jobs:
             '@echo off',
             'setlocal',
             'if not defined MUJOCO_CJK_FONT set MUJOCO_CJK_FONT=C:\Windows\Fonts\msyh.ttc',
-            'start "" "%~dp0mujoco_studio.exe"'
+            'start "" /D "%~dp0" "%~dp0mujoco_studio.exe"'
           )
           $lines | Set-Content -Path $bat -Encoding ascii
 
