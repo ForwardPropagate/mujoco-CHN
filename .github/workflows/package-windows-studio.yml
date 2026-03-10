@@ -76,14 +76,13 @@ jobs:
         run: |
           $stage = Join-Path $env:RUNNER_TEMP "mujoco-studio-windows-x64"
           $bat = Join-Path $stage "run_studio_zh.bat"
-          @"
-@echo off
-setlocal
-if not defined MUJOCO_CJK_FONT (
-  set MUJOCO_CJK_FONT=C:\Windows\Fonts\msyh.ttc
-)
-start "" "%~dp0mujoco_studio.exe"
-"@ | Set-Content -Path $bat -Encoding ascii
+          $lines = @(
+            '@echo off',
+            'setlocal',
+            'if not defined MUJOCO_CJK_FONT set MUJOCO_CJK_FONT=C:\Windows\Fonts\msyh.ttc',
+            'start "" "%~dp0mujoco_studio.exe"'
+          )
+          $lines | Set-Content -Path $bat -Encoding ascii
 
       - name: Create zip
         shell: powershell
