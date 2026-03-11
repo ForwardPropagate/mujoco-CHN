@@ -36,7 +36,7 @@ jobs:
             -DMUJOCO_BUILD_EXAMPLES=OFF `
             -DMUJOCO_BUILD_SIMULATE=OFF `
             -DMUJOCO_BUILD_STUDIO=ON `
-            -DMUJOCO_USE_FILAMENT=OFF
+            -DMUJOCO_USE_FILAMENT=ON
 
       - name: Build Studio
         shell: powershell
