@@ -988,7 +988,7 @@ void MakeRenderingSection(mj::Simulate* sim, const mjModel* m) {
     {mjITEM_END}
   };
   mjuiDef defOpenGL[] = {
-    {mjITEM_SEPARATOR, "OpenGL 效果", 1},
+    {mjITEM_SEPARATOR, "图形效果", 1},
     {mjITEM_END}
   };
 
@@ -1141,7 +1141,7 @@ void MakeVisualizationSection(mj::Simulate* sim, const mjModel* m) {
     {mjITEM_EDITFLOAT, "坐标轴宽度",     2, &(vis->scale.framewidth),     "1"},
     {mjITEM_EDITFLOAT, "约束",           2, &(vis->scale.constraint),     "1"},
     {mjITEM_EDITFLOAT, "曲柄滑块",       2, &(vis->scale.slidercrank),    "1"},
-    {mjITEM_SEPARATOR, "RGBA", mjPRESERVE},
+    {mjITEM_SEPARATOR, "颜色 (RGBA)", mjPRESERVE},
     {mjITEM_EDITFLOAT, "雾",             2, &(vis->rgba.fog),              "4"},
     {mjITEM_EDITFLOAT, "霾",             2, &(vis->rgba.haze),             "4"},
     {mjITEM_EDITFLOAT, "力",             2, &(vis->rgba.force),            "4"},
@@ -2643,7 +2643,7 @@ void Simulate::LoadOnRenderThread() {
 
   // set window title to model name
   if (this->m_->names) {
-    char title[200] = "MuJoCo : ";
+    char title[200] = "MuJoCo 查看器 : ";
     mju::strcat_arr(title, this->m_->names);
     platform_ui->SetWindowTitle(title);
   }
