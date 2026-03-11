@@ -13,21 +13,57 @@ on:
       - "cmake/**"
 
 jobs:
-  wheel-windows:
-    runs-on: windows-2025
+  wheel-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2025
+            label: windows-x64
+            tmpdir: "C:/Temp"
+            cmake_args: >-
+              -DCMAKE_SYSTEM_VERSION="10.0.26100.0"
+              -DMUJOCO_BUILD_TESTS=OFF
+            build_args: "-- -m"
+          - os: ubuntu-24.04
+            label: linux-x64
+            tmpdir: "/tmp"
+            cmake_args: >-
+              -G Ninja
+              -DMUJOCO_BUILD_TESTS=OFF
+          - os: macos-15
+            label: macos-arm64
+            tmpdir: "/tmp"
+            cmake_args: >-
+              -G Ninja
+              -DMUJOCO_BUILD_TESTS=OFF
+          - os: macos-15-large
+            label: macos-x86_64
+            tmpdir: "/tmp"
+            cmake_args: >-
+              -G Ninja
+              -DMUJOCO_BUILD_TESTS=OFF
+    runs-on: ${{ matrix.os }}
     permissions:
       contents: read
     env:
-      TMPDIR: "C:/Temp"
-      CMAKE_ARGS: >-
-        -DCMAKE_SYSTEM_VERSION="10.0.26100.0"
-        -DMUJOCO_BUILD_TESTS=OFF
+      TMPDIR: ${{ matrix.tmpdir }}
+      CMAKE_ARGS: ${{ matrix.cmake_args }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Prepare Linux
+        if: ${{ runner.os == 'Linux' }}
+        run: bash ./.github/workflows/build_steps.sh prepare_linux
+
+      - name: Prepare macOS
+        if: ${{ runner.os == 'macOS' }}
+        run: brew install ninja
+
       - name: Setup MSVC
+        if: ${{ runner.os == 'Windows' }}
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
@@ -49,7 +85,7 @@ jobs:
         shell: bash
         working-directory: build
         env:
-          CMAKE_BUILD_ARGS: "-- -m"
+          CMAKE_BUILD_ARGS: ${{ matrix.build_args }}
         run: bash ../.github/workflows/build_steps.sh build_mujoco
 
       - name: Install MuJoCo
@@ -58,9 +94,16 @@ jobs:
         run: bash ../.github/workflows/build_steps.sh install_mujoco
 
       - name: Copy plugins (Windows)
+        if: ${{ runner.os == 'Windows' }}
         shell: bash
         working-directory: build
         run: bash ../.github/workflows/build_steps.sh copy_plugins_window
+
+      - name: Copy plugins (POSIX)
+        if: ${{ runner.os != 'Windows' }}
+        shell: bash
+        working-directory: build
+        run: bash ../.github/workflows/build_steps.sh copy_plugins_posix
 
       - name: Build Python sdist
         shell: bash
@@ -75,7 +118,49 @@ jobs:
       - name: Upload wheel artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mujoco-python-viewer-wheel-windows-x64
+          name: mujoco-python-viewer-wheel-${{ matrix.label }}
+          path: |
+            python/dist/mujoco-*.whl
+            python/dist/mujoco-*.tar.gz
+          if-no-files-found: error
+
+  wheel-centos:
+    name: wheel-centos7-compat
+    runs-on: ubuntu-24.04
+    container:
+      image: quay.io/pypa/manylinux2014_x86_64
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build translated wheel in CentOS-compatible container
+        shell: bash
+        run: |
+          set -euxo pipefail
+          export TMPDIR=/tmp
+          export CMAKE_ARGS="-G Ninja -DMUJOCO_BUILD_TESTS=OFF"
+          export CMAKE_BUILD_ARGS=""
+          PYBIN=/opt/python/cp311-cp311/bin
+
+          "$PYBIN/python" -m venv /tmp/venv
+          source /tmp/venv/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade --require-hashes -r python/build_requirements.txt
+
+          bash ./.github/workflows/build_steps.sh configure_mujoco
+          (cd build && bash ../.github/workflows/build_steps.sh build_mujoco)
+          (cd build && bash ../.github/workflows/build_steps.sh install_mujoco)
+          (cd build && bash ../.github/workflows/build_steps.sh copy_plugins_posix)
+          (cd python && bash ../.github/workflows/build_steps.sh make_python_sdist)
+          (cd python/dist && bash ../../.github/workflows/build_steps.sh build_python_bindings)
+
+      - name: Upload CentOS wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mujoco-python-viewer-wheel-centos7-compat
           path: |
             python/dist/mujoco-*.whl
             python/dist/mujoco-*.tar.gz
