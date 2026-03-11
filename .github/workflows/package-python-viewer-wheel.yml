@@ -1,0 +1,82 @@
+name: package-python-viewer-wheel
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/package-python-viewer-wheel.yml"
+      - "python/**"
+      - "simulate/**"
+      - "include/**"
+      - "src/**"
+      - "CMakeLists.txt"
+      - "cmake/**"
+
+jobs:
+  wheel-windows:
+    runs-on: windows-2025
+    permissions:
+      contents: read
+    env:
+      TMPDIR: "C:/Temp"
+      CMAKE_ARGS: >-
+        -DCMAKE_SYSTEM_VERSION="10.0.26100.0"
+        -DMUJOCO_BUILD_TESTS=OFF
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Prepare Python Env
+        shell: bash
+        run: bash ./.github/workflows/build_steps.sh prepare_python
+
+      - name: Configure MuJoCo
+        shell: bash
+        run: bash ./.github/workflows/build_steps.sh configure_mujoco
+
+      - name: Build MuJoCo
+        shell: bash
+        working-directory: build
+        env:
+          CMAKE_BUILD_ARGS: "-- -m"
+        run: bash ../.github/workflows/build_steps.sh build_mujoco
+
+      - name: Install MuJoCo
+        shell: bash
+        working-directory: build
+        run: bash ../.github/workflows/build_steps.sh install_mujoco
+
+      - name: Copy plugins (Windows)
+        shell: bash
+        working-directory: build
+        run: bash ../.github/workflows/build_steps.sh copy_plugins_window
+
+      - name: Build Python sdist
+        shell: bash
+        working-directory: python
+        run: bash ../.github/workflows/build_steps.sh make_python_sdist
+
+      - name: Build translated wheel
+        shell: bash
+        working-directory: python/dist
+        run: bash ../../.github/workflows/build_steps.sh build_python_bindings
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mujoco-python-viewer-wheel-windows-x64
+          path: |
+            python/dist/mujoco-*.whl
+            python/dist/mujoco-*.tar.gz
+          if-no-files-found: error
