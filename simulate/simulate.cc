@@ -107,7 +107,7 @@ const char* TranslateUiName(const char* src) {
     {"Damper", "阻尼"},
     {"Gravity", "重力"},
     {"Clampctrl", "控制钳制"},
-    {"Warmstart", "热启动"},
+    {"Warmstart", "Warmstart"},
     {"Filterparent", "父级过滤"},
     {"Actuation", "驱动"},
     {"Refsafe", "参考安全"},
@@ -127,7 +127,7 @@ const char* TranslateUiName(const char* src) {
     {"Texture", "纹理"},
     {"Joint", "关节"},
     {"Camera", "相机"},
-    {"Actuator", "执行器"},
+    {"Actuator", "Actuator"},
     {"Activation", "激活"},
     {"Light", "光源"},
     {"Tendon", "肌腱"},
@@ -151,18 +151,18 @@ const char* TranslateUiName(const char* src) {
     {"Flex Skin", "柔体皮肤"},
     {"Body Tree", "刚体树"},
     {"Mesh Tree", "网格树"},
-    {"SDF iters", "SDF 迭代"},
+    {"SDF iters", "SDF Iterations"},
     {"Shadow", "阴影"},
-    {"Wireframe", "线框"},
+    {"Wireframe", "Wireframe"},
     {"Reflection", "反射"},
     {"Additive", "叠加"},
-    {"Skybox", "天空盒"},
+    {"Skybox", "Skybox"},
     {"Fog", "雾"},
     {"Haze", "霾"},
     {"Depth", "深度"},
-    {"Segment", "分割"},
-    {"Id Color", "ID 颜色"},
-    {"Cull Face", "面剔除"},
+    {"Segment", "Segment"},
+    {"Id Color", "ID Color"},
+    {"Cull Face", "Cull Face"},
   };
   for (const auto& [en, zh] : kTable) {
     if (!std::strcmp(src, en)) {
@@ -879,10 +879,10 @@ void MakePhysicsSection(mj::Simulate* sim) {
   mjOption* opt = sim->is_passive_ ? &sim->m_passive_->opt : &sim->m_->opt;
   mjuiDef defPhysics[] = {
     {mjITEM_SECTION,   "物理",          mjPRESERVE, nullptr,          "AP"},
-    {mjITEM_SELECT,    "积分器",        2, &(opt->integrator),        "欧拉\nRK4\n隐式\n快速隐式"},
+    {mjITEM_SELECT,    "Integrator",    2, &(opt->integrator),        "Euler\nRK4\nimplicit\nimplicitfast"},
     {mjITEM_SELECT,    "摩擦锥",        2, &(opt->cone),              "棱锥\n椭圆"},
-    {mjITEM_SELECT,    "雅可比",        2, &(opt->jacobian),          "稠密\n稀疏\n自动"},
-    {mjITEM_SELECT,    "求解器",        2, &(opt->solver),            "PGS\nCG\n牛顿"},
+    {mjITEM_SELECT,    "Jacobian",      2, &(opt->jacobian),          "Dense\nSparse\nAuto"},
+    {mjITEM_SELECT,    "Solver",        2, &(opt->solver),            "PGS\nCG\nNewton"},
     {mjITEM_SEPARATOR, "算法参数",      mjPRESERVE},
     {mjITEM_EDITNUM,   "时间步长",      2, &(opt->timestep),          "1 0 1"},
     {mjITEM_EDITINT,   "迭代次数",      2, &(opt->iterations),        "1 0 1000"},
@@ -902,7 +902,7 @@ void MakePhysicsSection(mj::Simulate* sim) {
     {mjITEM_EDITNUM,   "磁场",          2, opt->magnetic,             "3"},
     {mjITEM_EDITNUM,   "密度",          2, &(opt->density),           "1"},
     {mjITEM_EDITNUM,   "粘度",          2, &(opt->viscosity),         "1"},
-    {mjITEM_EDITNUM,   "阻抗比",        2, &(opt->impratio),          "1"},
+    {mjITEM_EDITNUM,   "Impratio",      2, &(opt->impratio),          "1"},
     {mjITEM_SEPARATOR, "禁用标志",      mjPRESERVE},
     {mjITEM_END}
   };
@@ -919,13 +919,13 @@ void MakePhysicsSection(mj::Simulate* sim) {
     {mjITEM_END}
   };
   mjuiDef defDisableActuator[] = {
-    {mjITEM_SEPARATOR, "执行器组启用",  mjPRESERVE},
-    {mjITEM_CHECKBYTE,  "执行器组 0",    2, sim->enableactuator+0,     ""},
-    {mjITEM_CHECKBYTE,  "执行器组 1",    2, sim->enableactuator+1,     ""},
-    {mjITEM_CHECKBYTE,  "执行器组 2",    2, sim->enableactuator+2,     ""},
-    {mjITEM_CHECKBYTE,  "执行器组 3",    2, sim->enableactuator+3,     ""},
-    {mjITEM_CHECKBYTE,  "执行器组 4",    2, sim->enableactuator+4,     ""},
-    {mjITEM_CHECKBYTE,  "执行器组 5",    2, sim->enableactuator+5,     ""},
+    {mjITEM_SEPARATOR, "Actuator Group Enable",  mjPRESERVE},
+    {mjITEM_CHECKBYTE,  "Actuator Group 0",       2, sim->enableactuator+0,     ""},
+    {mjITEM_CHECKBYTE,  "Actuator Group 1",       2, sim->enableactuator+1,     ""},
+    {mjITEM_CHECKBYTE,  "Actuator Group 2",       2, sim->enableactuator+2,     ""},
+    {mjITEM_CHECKBYTE,  "Actuator Group 3",       2, sim->enableactuator+3,     ""},
+    {mjITEM_CHECKBYTE,  "Actuator Group 4",       2, sim->enableactuator+4,     ""},
+    {mjITEM_CHECKBYTE,  "Actuator Group 5",       2, sim->enableactuator+5,     ""},
     {mjITEM_END}
   };
 
@@ -960,7 +960,7 @@ void MakePhysicsSection(mj::Simulate* sim) {
 
     // close less useful subsections
     if (it->type == mjITEM_SEPARATOR) {
-      if (mju::strcmp_arr(it->name, "执行器组启用") &&
+      if (mju::strcmp_arr(it->name, "Actuator Group Enable") &&
           mju::strcmp_arr(it->name, "接触参数覆盖")  &&
           mju::strcmp_arr(it->name, "物理参数")) {
         it->state = mjSEPCLOSED+1;
@@ -978,7 +978,7 @@ void MakeRenderingSection(mj::Simulate* sim, const mjModel* m) {
     {mjITEM_SELECT, "相机", 2, &(sim->camera), "自由\n跟踪"},
     {mjITEM_SELECT, "标签", 2, &(sim->opt.label),
       "无\n刚体\n关节\n几何体\n位点\n相机\n光源\n肌腱\n"
-      "执行器\n约束\n柔体\n皮肤\n选中\n选点\n接触\n力\n孤岛"
+      "Actuator\n约束\n柔体\n皮肤\n选中\n选点\n接触\n力\n孤岛"
     },
     {mjITEM_SELECT, "坐标系", 2, &(sim->opt.frame),
       "无\n刚体\n几何体\n位点\n相机\n光源\n接触\n世界"
@@ -1035,7 +1035,7 @@ void MakeRenderingSection(mj::Simulate* sim, const mjModel* m) {
 
   // create tree slider
   mjuiDef defTree[] = {
-      {mjITEM_SLIDERINT, "树深度", 2, &sim->opt.bvh_depth, "0 20"},
+      {mjITEM_SLIDERINT, "BVH Depth", 2, &sim->opt.bvh_depth, "0 20"},
       {mjITEM_SLIDERINT, "柔体层", 2, &sim->opt.flex_layer, "0 10"},
       {mjITEM_END}
   };
@@ -1101,7 +1101,7 @@ void MakeVisualizationSection(mj::Simulate* sim, const mjModel* m) {
     {mjITEM_EDITFLOAT, "镜面反射",      2, &(vis->headlight.specular),   "3"},
     {mjITEM_SEPARATOR, "自由相机", 1},
     {mjITEM_RADIO,     "正交投影",      2, &(vis->global.orthographic),  "否\n是"},
-    {mjITEM_EDITFLOAT, "视野角",        2, &(vis->global.fovy),          "1"},
+    {mjITEM_EDITFLOAT, "FOV",           2, &(vis->global.fovy),          "1"},
     {mjITEM_EDITNUM,   "中心",          2, &(stat->center),              "3"},
     {mjITEM_EDITFLOAT, "方位角",        2, &(vis->global.azimuth),       "1"},
     {mjITEM_EDITFLOAT, "俯仰角",        2, &(vis->global.elevation),     "1"},
@@ -1115,7 +1115,7 @@ void MakeVisualizationSection(mj::Simulate* sim, const mjModel* m) {
     {mjITEM_EDITFLOAT, "旋转刚度",       2, &(vis->map.stiffnessrot),     "1"},
     {mjITEM_EDITFLOAT, "力",             2, &(vis->map.force),            "1"},
     {mjITEM_EDITFLOAT, "力矩",           2, &(vis->map.torque),           "1"},
-    {mjITEM_EDITFLOAT, "透明度",         2, &(vis->map.alpha),            "1"},
+    {mjITEM_EDITFLOAT, "Alpha",          2, &(vis->map.alpha),            "1"},
     {mjITEM_EDITFLOAT, "雾起始",         2, &(vis->map.fogstart),         "1"},
     {mjITEM_EDITFLOAT, "雾结束",         2, &(vis->map.fogend),           "1"},
     {mjITEM_EDITFLOAT, "近裁剪面",       2, &(vis->map.znear),            "1"},
@@ -1135,8 +1135,8 @@ void MakeVisualizationSection(mj::Simulate* sim, const mjModel* m) {
     {mjITEM_EDITFLOAT, "选点",           2, &(vis->scale.selectpoint),    "1"},
     {mjITEM_EDITFLOAT, "关节长度",       2, &(vis->scale.jointlength),    "1"},
     {mjITEM_EDITFLOAT, "关节宽度",       2, &(vis->scale.jointwidth),     "1"},
-    {mjITEM_EDITFLOAT, "执行器长度",     2, &(vis->scale.actuatorlength), "1"},
-    {mjITEM_EDITFLOAT, "执行器宽度",     2, &(vis->scale.actuatorwidth),  "1"},
+    {mjITEM_EDITFLOAT, "Actuator Length",2, &(vis->scale.actuatorlength), "1"},
+    {mjITEM_EDITFLOAT, "Actuator Width", 2, &(vis->scale.actuatorwidth),  "1"},
     {mjITEM_EDITFLOAT, "坐标轴长度",     2, &(vis->scale.framelength),    "1"},
     {mjITEM_EDITFLOAT, "坐标轴宽度",     2, &(vis->scale.framewidth),     "1"},
     {mjITEM_EDITFLOAT, "约束",           2, &(vis->scale.constraint),     "1"},
@@ -1147,9 +1147,9 @@ void MakeVisualizationSection(mj::Simulate* sim, const mjModel* m) {
     {mjITEM_EDITFLOAT, "力",             2, &(vis->rgba.force),            "4"},
     {mjITEM_EDITFLOAT, "惯量",           2, &(vis->rgba.inertia),          "4"},
     {mjITEM_EDITFLOAT, "关节",           2, &(vis->rgba.joint),            "4"},
-    {mjITEM_EDITFLOAT, "执行器",         2, &(vis->rgba.actuator),         "4"},
-    {mjITEM_EDITFLOAT, "执行器负向",     2, &(vis->rgba.actuatornegative), "4"},
-    {mjITEM_EDITFLOAT, "执行器正向",     2, &(vis->rgba.actuatorpositive), "4"},
+    {mjITEM_EDITFLOAT, "Actuator",       2, &(vis->rgba.actuator),         "4"},
+    {mjITEM_EDITFLOAT, "Actuator Neg",   2, &(vis->rgba.actuatornegative), "4"},
+    {mjITEM_EDITFLOAT, "Actuator Pos",   2, &(vis->rgba.actuatorpositive), "4"},
     {mjITEM_EDITFLOAT, "质心",           2, &(vis->rgba.com),              "4"},
     {mjITEM_EDITFLOAT, "相机",           2, &(vis->rgba.camera),           "4"},
     {mjITEM_EDITFLOAT, "光源",           2, &(vis->rgba.light),            "4"},
@@ -1164,7 +1164,7 @@ void MakeVisualizationSection(mj::Simulate* sim, const mjModel* m) {
     {mjITEM_EDITFLOAT, "约束",           2, &(vis->rgba.constraint),       "4"},
     {mjITEM_EDITFLOAT, "曲柄滑块",       2, &(vis->rgba.slidercrank),      "4"},
     {mjITEM_EDITFLOAT, "断裂曲柄",       2, &(vis->rgba.crankbroken),      "4"},
-    {mjITEM_EDITFLOAT, "视锥",           2, &(vis->rgba.frustum),          "4"},
+    {mjITEM_EDITFLOAT, "Frustum",        2, &(vis->rgba.frustum),          "4"},
     {mjITEM_EDITFLOAT, "包围体",         2, &(vis->rgba.bv),               "4"},
     {mjITEM_EDITFLOAT, "激活包围体",     2, &(vis->rgba.bvactive),         "4"},
     {mjITEM_END}
@@ -1206,13 +1206,13 @@ void MakeGroupSection(mj::Simulate* sim) {
     {mjITEM_CHECKBYTE,  "肌腱 3",           2, sim->opt.tendongroup+3,      ""},
     {mjITEM_CHECKBYTE,  "肌腱 4",           2, sim->opt.tendongroup+4,      ""},
     {mjITEM_CHECKBYTE,  "肌腱 5",           2, sim->opt.tendongroup+5,      ""},
-    {mjITEM_SEPARATOR,  "执行器分组",  1},
-    {mjITEM_CHECKBYTE,  "执行器 0",         2, sim->opt.actuatorgroup,      ""},
-    {mjITEM_CHECKBYTE,  "执行器 1",         2, sim->opt.actuatorgroup+1,    ""},
-    {mjITEM_CHECKBYTE,  "执行器 2",         2, sim->opt.actuatorgroup+2,    ""},
-    {mjITEM_CHECKBYTE,  "执行器 3",         2, sim->opt.actuatorgroup+3,    ""},
-    {mjITEM_CHECKBYTE,  "执行器 4",         2, sim->opt.actuatorgroup+4,    ""},
-    {mjITEM_CHECKBYTE,  "执行器 5",         2, sim->opt.actuatorgroup+5,    ""},
+    {mjITEM_SEPARATOR,  "Actuator Groups", 1},
+    {mjITEM_CHECKBYTE,  "Actuator 0",       2, sim->opt.actuatorgroup,      ""},
+    {mjITEM_CHECKBYTE,  "Actuator 1",       2, sim->opt.actuatorgroup+1,    ""},
+    {mjITEM_CHECKBYTE,  "Actuator 2",       2, sim->opt.actuatorgroup+2,    ""},
+    {mjITEM_CHECKBYTE,  "Actuator 3",       2, sim->opt.actuatorgroup+3,    ""},
+    {mjITEM_CHECKBYTE,  "Actuator 4",       2, sim->opt.actuatorgroup+4,    ""},
+    {mjITEM_CHECKBYTE,  "Actuator 5",       2, sim->opt.actuatorgroup+5,    ""},
     {mjITEM_SEPARATOR,  "柔体分组",    1},
     {mjITEM_CHECKBYTE,  "柔体 0",           2, sim->opt.flexgroup,          ""},
     {mjITEM_CHECKBYTE,  "柔体 1",           2, sim->opt.flexgroup+1,        ""},

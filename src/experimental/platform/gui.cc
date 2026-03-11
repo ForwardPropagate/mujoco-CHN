@@ -43,7 +43,7 @@ static const char* TranslateUiLabel(std::string_view label) {
   if (label == "Damper") return "阻尼";
   if (label == "Gravity") return "重力";
   if (label == "Clampctrl") return "限幅控制";
-  if (label == "Warmstart") return "热启动";
+  if (label == "Warmstart") return "Warmstart";
   if (label == "Filterparent") return "父级过滤";
   if (label == "Actuation") return "驱动";
   if (label == "Refsafe") return "参考安全";
@@ -60,11 +60,11 @@ static const char* TranslateUiLabel(std::string_view label) {
   if (label == "MultiCCD") return "多重CCD";
   if (label == "Sleep") return "休眠";
   if (label == "Flags") return "标志";
-  if (label == "Actuator Groups") return "执行器分组";
+  if (label == "Actuator Groups") return "Actuator Groups";
   if (label == "Algorithmic Parameters") return "算法参数";
   if (label == "Physical Parameters") return "物理参数";
   if (label == "Contact Override") return "接触覆盖";
-  if (label == "Act Group") return "执行组";
+  if (label == "Act Group") return "Act Group";
   return nullptr;
 }
 
@@ -597,16 +597,16 @@ void PhysicsGui(mjModel* model, float min_width) {
   auto& opt = model->opt;
 
   const char* opts0[] = {"Euler", "RK4", "implicit", "implicitfast"};
-  ImGui::Combo("积分器", &opt.integrator, opts0, IM_ARRAYSIZE(opts0));
+  ImGui::Combo("Integrator", &opt.integrator, opts0, IM_ARRAYSIZE(opts0));
 
   const char* opts1[] = {"Pyramidal", "Elliptic"};
   ImGui::Combo("锥模型", &opt.cone, opts1, IM_ARRAYSIZE(opts1));
 
   const char* opts2[] = {"Dense", "Sparse", "Auto"};
-  ImGui::Combo("雅可比", &opt.jacobian, opts2, IM_ARRAYSIZE(opts2));
+  ImGui::Combo("Jacobian", &opt.jacobian, opts2, IM_ARRAYSIZE(opts2));
 
   const char* opts3[] = {"PGS", "CG", "Newton"};
-  ImGui::Combo("求解器", &opt.solver, opts3, IM_ARRAYSIZE(opts3));
+  ImGui::Combo("Solver", &opt.solver, opts3, IM_ARRAYSIZE(opts3));
 
   if (ImGui::TreeNodeEx("标志###Flags", ImGuiTreeNodeFlags_DefaultOpen)) {
     if (ImGui::BeginTable("##PhysicsFlagsTable", num_cols)) {
@@ -630,12 +630,12 @@ void PhysicsGui(mjModel* model, float min_width) {
     ImGui::TreePop();
   }
 
-  if (ImGui::TreeNodeEx("执行器分组###Actuator Groups")) {
+  if (ImGui::TreeNodeEx("Actuator Groups###Actuator Groups")) {
     if (ImGui::BeginTable("##ActuatorGroupsTable", num_cols)) {
       const ImVec2 size = GetFlexElementSize(num_cols);
       for (int i = 0; i < 6; ++i) {
         char label[64];
-        std::snprintf(label, sizeof(label), "执行组 %d", i);
+        std::snprintf(label, sizeof(label), "Act Group %d", i);
         ImGui::TableNextColumn();
         int flipped = ~opt.disableactuator;
         ImGui_BitToggle(label, &flipped, 1 << i, size);
@@ -668,7 +668,7 @@ void PhysicsGui(mjModel* model, float min_width) {
     ImGui_InputN("磁场", opt.magnetic, 3);
     ImGui_Input("密度", &opt.density, {.min = .1, .max = 1});
     ImGui_Input("黏度", &opt.viscosity, {.min = .1, .max = 10});
-    ImGui_Input("阻抗比", &opt.impratio, {.min = .1, .max = 1});
+    ImGui_Input("Impratio", &opt.impratio, {.min = .1, .max = 1});
     ImGui::TreePop();
   };
 
@@ -691,7 +691,7 @@ void VisualizationGui(mjModel* model, mjvOption* vis_options, mjvCamera* camera,
   const float item_width = ImGui::GetWindowWidth() * .6f;
   ImGui::PushItemWidth(item_width);
 
-  ImGui::SliderInt("树深度", &vis_options->bvh_depth, 0, 20);
+  ImGui::SliderInt("BVH Depth", &vis_options->bvh_depth, 0, 20);
   ImGui::SliderInt("柔体层级", &vis_options->flex_layer, 0, 10);
 
   if (ImGui::TreeNodeEx("头灯")) {
@@ -703,7 +703,7 @@ void VisualizationGui(mjModel* model, mjvOption* vis_options, mjvCamera* camera,
   }
   if (ImGui::TreeNodeEx("自由相机")) {
     ImGui_SwitchToggle("正交", &vis.global.orthographic);
-    ImGui_Input("视场角", &vis.global.fovy, {.format = "%0.2f"});
+    ImGui_Input("FOV", &vis.global.fovy, {.format = "%0.2f"});
     ImGui_InputN("中心", stat.center, 3, {.format = "%0.2f"});
     ImGui_Input("方位角", &vis.global.azimuth, {.format = "%0.2f"});
     ImGui_Input("俯仰角", &vis.global.elevation, {.format = "%0.2f"});
@@ -750,8 +750,8 @@ void VisualizationGui(mjModel* model, mjvOption* vis_options, mjvCamera* camera,
     ImGui_Input("选中点", &vis.scale.selectpoint);
     ImGui_Input("关节长度", &vis.scale.jointlength);
     ImGui_Input("关节宽度", &vis.scale.jointwidth);
-    ImGui_Input("执行器长度", &vis.scale.actuatorlength);
-    ImGui_Input("执行器宽度", &vis.scale.actuatorwidth);
+    ImGui_Input("Actuator Length", &vis.scale.actuatorlength);
+    ImGui_Input("Actuator Width", &vis.scale.actuatorwidth);
     ImGui_Input("坐标轴长度", &vis.scale.framelength);
     ImGui_Input("坐标轴宽度", &vis.scale.framewidth);
     ImGui_Input("约束", &vis.scale.constraint);
@@ -765,9 +765,9 @@ void VisualizationGui(mjModel* model, mjvOption* vis_options, mjvCamera* camera,
     ImGui::ColorEdit4("力", vis.rgba.force);
     ImGui::ColorEdit4("惯量", vis.rgba.inertia);
     ImGui::ColorEdit4("关节", vis.rgba.joint);
-    ImGui::ColorEdit4("执行器", vis.rgba.actuator);
-    ImGui::ColorEdit4("执行器负", vis.rgba.actuatornegative);
-    ImGui::ColorEdit4("执行器正", vis.rgba.actuatorpositive);
+    ImGui::ColorEdit4("Actuator", vis.rgba.actuator);
+    ImGui::ColorEdit4("Actuator Negative", vis.rgba.actuatornegative);
+    ImGui::ColorEdit4("Actuator Positive", vis.rgba.actuatorpositive);
     ImGui::ColorEdit4("质心", vis.rgba.com);
     ImGui::ColorEdit4("相机", vis.rgba.camera);
     ImGui::ColorEdit4("光源", vis.rgba.light);
@@ -782,7 +782,7 @@ void VisualizationGui(mjModel* model, mjvOption* vis_options, mjvCamera* camera,
     ImGui::ColorEdit4("约束", vis.rgba.constraint);
     ImGui::ColorEdit4("曲柄滑块", vis.rgba.slidercrank);
     ImGui::ColorEdit4("曲柄断裂", vis.rgba.crankbroken);
-    ImGui::ColorEdit4("视锥", vis.rgba.frustum);
+    ImGui::ColorEdit4("Frustum", vis.rgba.frustum);
     ImGui::ColorEdit4("包围体", vis.rgba.bv);
     ImGui::ColorEdit4("BV 激活", vis.rgba.bvactive);
     ImGui::TreePop();
@@ -867,7 +867,7 @@ void GroupsGui(const mjModel* model, mjvOption* vis_options, float min_width) {
   GroupGui("位点", vis_options->sitegroup);
   GroupGui("关节", vis_options->jointgroup);
   GroupGui("肌腱", vis_options->tendongroup);
-  GroupGui("执行器", vis_options->actuatorgroup);
+  GroupGui("Actuator", vis_options->actuatorgroup);
   GroupGui("柔体", vis_options->flexgroup);
   GroupGui("蒙皮", vis_options->skingroup);
 }
@@ -1110,20 +1110,20 @@ void StatsGui(const mjModel* model, const mjData* data, bool paused,
   ImGui::SetColumnWidth(0, ImGui::GetWindowWidth() * 0.4f);
   ImGui::SetColumnWidth(1, ImGui::GetWindowWidth() * 0.6f);
 
-  ImGui::Text("Time");
-  ImGui::Text("Size");
+  ImGui::Text("时间");
+  ImGui::Text("规模");
   ImGui::Text("CPU");
   ImGui::Text("Solver");
   ImGui::Text("FPS");
-  ImGui::Text("Memory");
+  ImGui::Text("内存");
   if (model->opt.enableflags & mjENBL_ENERGY) {
-    ImGui::Text("Energy");
+    ImGui::Text("能量");
   }
   if (model->opt.enableflags & mjENBL_FWDINV) {
-    ImGui::Text("FwdInv");
+    ImGui::Text("正逆验证");
   }
   if (!(model->opt.disableflags & mjDSBL_ISLAND)) {
-    ImGui::Text("Islands");
+    ImGui::Text("孤岛");
   }
 
   ImGui::NextColumn();
