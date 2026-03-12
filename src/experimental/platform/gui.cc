@@ -37,37 +37,6 @@ static ImVec2 GetFlexElementSize(int num_cols) {
   return ImVec2(width, 0);
 }
 
-static const char* TranslateUiLabel(std::string_view label) {
-  if (label == "Contact") return "接触";
-  if (label == "Spring") return "弹簧";
-  if (label == "Damper") return "阻尼";
-  if (label == "Gravity") return "重力";
-  if (label == "Clampctrl") return "限幅控制";
-  if (label == "Warmstart") return "Warmstart";
-  if (label == "Filterparent") return "父级过滤";
-  if (label == "Actuation") return "驱动";
-  if (label == "Refsafe") return "参考安全";
-  if (label == "Sensor") return "传感器";
-  if (label == "Midphase") return "中间阶段";
-  if (label == "Eulerdamp") return "欧拉阻尼";
-  if (label == "AutoReset") return "自动重置";
-  if (label == "NativeCCD") return "原生CCD";
-  if (label == "Island") return "孤岛";
-  if (label == "Override") return "覆盖";
-  if (label == "Energy") return "能量";
-  if (label == "Fwdinv") return "正逆验证";
-  if (label == "InvDiscrete") return "离散逆解";
-  if (label == "MultiCCD") return "多重CCD";
-  if (label == "Sleep") return "休眠";
-  if (label == "Flags") return "标志";
-  if (label == "Actuator Groups") return "Actuator Groups";
-  if (label == "Algorithmic Parameters") return "算法参数";
-  if (label == "Physical Parameters") return "物理参数";
-  if (label == "Contact Override") return "接触覆盖";
-  if (label == "Act Group") return "Act Group";
-  return nullptr;
-}
-
 void SetupTheme(GuiTheme theme) {
   ImGuiStyle& s = ImGui::GetStyle();
   ImVec4* c = s.Colors;
@@ -600,7 +569,7 @@ void PhysicsGui(mjModel* model, float min_width) {
   ImGui::Combo("Integrator", &opt.integrator, opts0, IM_ARRAYSIZE(opts0));
 
   const char* opts1[] = {"Pyramidal", "Elliptic"};
-  ImGui::Combo("锥模型", &opt.cone, opts1, IM_ARRAYSIZE(opts1));
+  ImGui::Combo("Cone", &opt.cone, opts1, IM_ARRAYSIZE(opts1));
 
   const char* opts2[] = {"Dense", "Sparse", "Auto"};
   ImGui::Combo("Jacobian", &opt.jacobian, opts2, IM_ARRAYSIZE(opts2));
@@ -608,22 +577,18 @@ void PhysicsGui(mjModel* model, float min_width) {
   const char* opts3[] = {"PGS", "CG", "Newton"};
   ImGui::Combo("Solver", &opt.solver, opts3, IM_ARRAYSIZE(opts3));
 
-  if (ImGui::TreeNodeEx("标志###Flags", ImGuiTreeNodeFlags_DefaultOpen)) {
+  if (ImGui::TreeNodeEx("Flags###Flags", ImGuiTreeNodeFlags_DefaultOpen)) {
     if (ImGui::BeginTable("##PhysicsFlagsTable", num_cols)) {
       const ImVec2 size = GetFlexElementSize(num_cols);
       for (int i = 0; i < mjNDISABLE; ++i) {
         ImGui::TableNextColumn();
         int flipped = ~opt.disableflags;
-        const char* translated = TranslateUiLabel(mjDISABLESTRING[i]);
-        ImGui_BitToggle(translated ? translated : mjDISABLESTRING[i], &flipped,
-                        1 << i, size);
+        ImGui_BitToggle(mjDISABLESTRING[i], &flipped, 1 << i, size);
         opt.disableflags = ~flipped;
       }
       for (int i = 0; i < mjNENABLE; ++i) {
         ImGui::TableNextColumn();
-        const char* translated = TranslateUiLabel(mjENABLESTRING[i]);
-        ImGui_BitToggle(translated ? translated : mjENABLESTRING[i],
-                        &opt.enableflags, 1 << i, size);
+        ImGui_BitToggle(mjENABLESTRING[i], &opt.enableflags, 1 << i, size);
       }
       ImGui::EndTable();
     }
@@ -646,37 +611,37 @@ void PhysicsGui(mjModel* model, float min_width) {
     ImGui::TreePop();
   };
 
-  if (ImGui::TreeNodeEx("算法参数###Algorithmic Parameters")) {
-    ImGui_Input("时间步", &opt.timestep, {0, 1, 0.01, 0.1});
-    ImGui_Input("迭代次数", &opt.iterations, {0, 1000, 1, 10});
-    ImGui_Input("容差", &opt.tolerance, {0, 1, 1e-7, 1e-6});
-    ImGui_Input("LS 迭代", &opt.ls_iterations, {0, 100, 1, 0.1});
-    ImGui_Input("LS 容差", &opt.ls_tolerance, {0, 0.1, 0.01, 0.1});
-    ImGui_Input("无滑移迭代", &opt.noslip_iterations, {0, 1000, 1, 100});
-    ImGui_Input("无滑移容差", &opt.noslip_tolerance, {0, 1, 0.01, 0.1});
-    ImGui_Input("CCD 迭代", &opt.ccd_iterations, {0, 1000, 1, 100});
-    ImGui_Input("CCD 容差", &opt.ccd_tolerance, {0, 1, 0.01, 0.1});
-    ImGui_Input("休眠容差", &opt.sleep_tolerance, {0, 1, 0.01, 0.1});
-    ImGui_Input("SDF 迭代", &opt.sdf_iterations, {1, 20, 1, 10});
-    ImGui_Input("SDF 初始点", &opt.sdf_initpoints, {1, 100, 1, 10});
+  if (ImGui::TreeNodeEx("Algorithmic Parameters###Algorithmic Parameters")) {
+    ImGui_Input("Timestep", &opt.timestep, {0, 1, 0.01, 0.1});
+    ImGui_Input("Iterations", &opt.iterations, {0, 1000, 1, 10});
+    ImGui_Input("Tolerance", &opt.tolerance, {0, 1, 1e-7, 1e-6});
+    ImGui_Input("LS Iterations", &opt.ls_iterations, {0, 100, 1, 0.1});
+    ImGui_Input("LS Tolerance", &opt.ls_tolerance, {0, 0.1, 0.01, 0.1});
+    ImGui_Input("Noslip Iterations", &opt.noslip_iterations, {0, 1000, 1, 100});
+    ImGui_Input("Noslip Tolerance", &opt.noslip_tolerance, {0, 1, 0.01, 0.1});
+    ImGui_Input("CCD Iterations", &opt.ccd_iterations, {0, 1000, 1, 100});
+    ImGui_Input("CCD Tolerance", &opt.ccd_tolerance, {0, 1, 0.01, 0.1});
+    ImGui_Input("Sleep Tolerance", &opt.sleep_tolerance, {0, 1, 0.01, 0.1});
+    ImGui_Input("SDF Iterations", &opt.sdf_iterations, {1, 20, 1, 10});
+    ImGui_Input("SDF Init Points", &opt.sdf_initpoints, {1, 100, 1, 10});
     ImGui::TreePop();
   }
 
-  if (ImGui::TreeNodeEx("物理参数###Physical Parameters")) {
-    ImGui_InputN("重力", opt.gravity, 3);
-    ImGui_InputN("风", opt.wind, 3);
-    ImGui_InputN("磁场", opt.magnetic, 3);
-    ImGui_Input("密度", &opt.density, {.min = .1, .max = 1});
-    ImGui_Input("黏度", &opt.viscosity, {.min = .1, .max = 10});
+  if (ImGui::TreeNodeEx("Physical Parameters###Physical Parameters")) {
+    ImGui_InputN("Gravity", opt.gravity, 3);
+    ImGui_InputN("Wind", opt.wind, 3);
+    ImGui_InputN("Magnetic", opt.magnetic, 3);
+    ImGui_Input("Density", &opt.density, {.min = .1, .max = 1});
+    ImGui_Input("Viscosity", &opt.viscosity, {.min = .1, .max = 10});
     ImGui_Input("Impratio", &opt.impratio, {.min = .1, .max = 1});
     ImGui::TreePop();
   };
 
-  if (ImGui::TreeNodeEx("接触覆盖###Contact Override")) {
-    ImGui_Input("边距", &opt.o_margin, {.min = 0.1, .max = 1});
-    ImGui_InputN("求解阻抗", opt.o_solimp, 5, {.format = "%0.1f"});
-    ImGui_InputN("求解参考", opt.o_solref, 2, {.format = "%0.1f"});
-    ImGui_InputN("摩擦", opt.o_friction, 5, {.format = "%.1f"});
+  if (ImGui::TreeNodeEx("Contact Override###Contact Override")) {
+    ImGui_Input("Margin", &opt.o_margin, {.min = 0.1, .max = 1});
+    ImGui_InputN("Solimp", opt.o_solimp, 5, {.format = "%0.1f"});
+    ImGui_InputN("Solref", opt.o_solref, 2, {.format = "%0.1f"});
+    ImGui_InputN("Friction", opt.o_friction, 5, {.format = "%.1f"});
     ImGui::TreePop();
   }
 

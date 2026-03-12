@@ -22,7 +22,7 @@ jobs:
             label: windows-x64
             tmpdir: "C:/Temp"
             cmake_args: >-
-              -DCMAKE_SYSTEM_VERSION="10.0.26100.0"
+              -DCMAKE_SYSTEM_VERSION=10.0.26100.0
               -DMUJOCO_BUILD_TESTS=OFF
             build_args: "-- -m"
           - os: ubuntu-24.04
@@ -37,7 +37,7 @@ jobs:
             cmake_args: >-
               -G Ninja
               -DMUJOCO_BUILD_TESTS=OFF
-          - os: macos-15-large
+          - os: macos-13
             label: macos-x86_64
             tmpdir: "/tmp"
             cmake_args: >-
@@ -127,8 +127,6 @@ jobs:
   wheel-centos:
     name: wheel-centos7-compat
     runs-on: ubuntu-24.04
-    container:
-      image: quay.io/pypa/manylinux2014_x86_64
     permissions:
       contents: read
 
@@ -140,22 +138,29 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          export TMPDIR=/tmp
-          export CMAKE_ARGS="-G Ninja -DMUJOCO_BUILD_TESTS=OFF"
-          export CMAKE_BUILD_ARGS=""
-          PYBIN=/opt/python/cp311-cp311/bin
+          docker run --rm \
+            -v "$PWD":/work \
+            -w /work \
+            quay.io/pypa/manylinux2014_x86_64 \
+            /bin/bash -lc '
+              set -euxo pipefail
+              export TMPDIR=/tmp
+              export CMAKE_ARGS="-G Ninja -DMUJOCO_BUILD_TESTS=OFF"
+              export CMAKE_BUILD_ARGS=""
+              PYBIN=/opt/python/cp311-cp311/bin
 
-          "$PYBIN/python" -m venv /tmp/venv
-          source /tmp/venv/bin/activate
-          python -m pip install --upgrade pip
-          python -m pip install --upgrade --require-hashes -r python/build_requirements.txt
+              "$PYBIN/python" -m venv /tmp/venv
+              source /tmp/venv/bin/activate
+              python -m pip install --upgrade pip
+              python -m pip install --upgrade --require-hashes -r python/build_requirements.txt
 
-          bash ./.github/workflows/build_steps.sh configure_mujoco
-          (cd build && bash ../.github/workflows/build_steps.sh build_mujoco)
-          (cd build && bash ../.github/workflows/build_steps.sh install_mujoco)
-          (cd build && bash ../.github/workflows/build_steps.sh copy_plugins_posix)
-          (cd python && bash ../.github/workflows/build_steps.sh make_python_sdist)
-          (cd python/dist && bash ../../.github/workflows/build_steps.sh build_python_bindings)
+              bash ./.github/workflows/build_steps.sh configure_mujoco
+              (cd build && bash ../.github/workflows/build_steps.sh build_mujoco)
+              (cd build && bash ../.github/workflows/build_steps.sh install_mujoco)
+              (cd build && bash ../.github/workflows/build_steps.sh copy_plugins_posix)
+              (cd python && bash ../.github/workflows/build_steps.sh make_python_sdist)
+              (cd python/dist && bash ../../.github/workflows/build_steps.sh build_python_bindings)
+            '
 
       - name: Upload CentOS wheel artifact
         uses: actions/upload-artifact@v4

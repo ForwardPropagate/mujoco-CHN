@@ -880,42 +880,42 @@ void MakePhysicsSection(mj::Simulate* sim) {
   mjuiDef defPhysics[] = {
     {mjITEM_SECTION,   "物理",          mjPRESERVE, nullptr,          "AP"},
     {mjITEM_SELECT,    "Integrator",    2, &(opt->integrator),        "Euler\nRK4\nimplicit\nimplicitfast"},
-    {mjITEM_SELECT,    "摩擦锥",        2, &(opt->cone),              "棱锥\n椭圆"},
+    {mjITEM_SELECT,    "Cone",          2, &(opt->cone),              "Pyramidal\nElliptic"},
     {mjITEM_SELECT,    "Jacobian",      2, &(opt->jacobian),          "Dense\nSparse\nAuto"},
     {mjITEM_SELECT,    "Solver",        2, &(opt->solver),            "PGS\nCG\nNewton"},
-    {mjITEM_SEPARATOR, "算法参数",      mjPRESERVE},
-    {mjITEM_EDITNUM,   "时间步长",      2, &(opt->timestep),          "1 0 1"},
-    {mjITEM_EDITINT,   "迭代次数",      2, &(opt->iterations),        "1 0 1000"},
-    {mjITEM_EDITNUM,   "容差",          2, &(opt->tolerance),         "1 0 1"},
-    {mjITEM_EDITINT,   "线搜索迭代",    2, &(opt->ls_iterations),     "1 0 100"},
-    {mjITEM_EDITNUM,   "线搜索容差",    2, &(opt->ls_tolerance),      "1 0 0.1"},
-    {mjITEM_EDITINT,   "无滑移迭代",    2, &(opt->noslip_iterations), "1 0 1000"},
-    {mjITEM_EDITNUM,   "无滑移容差",    2, &(opt->noslip_tolerance),  "1 0 1"},
-    {mjITEM_EDITINT,   "CCD 迭代",      2, &(opt->ccd_iterations),    "1 0 1000"},
-    {mjITEM_EDITNUM,   "CCD 容差",      2, &(opt->ccd_tolerance),     "1 0 1"},
-    {mjITEM_EDITNUM,   "休眠容差",      2, &(opt->sleep_tolerance),   "1 0 1"},
-    {mjITEM_EDITINT,   "SDF 迭代",      2, &(opt->sdf_iterations),    "1 1 20"},
-    {mjITEM_EDITINT,   "SDF 初始点",    2, &(opt->sdf_initpoints),    "1 1 100"},
-    {mjITEM_SEPARATOR, "物理参数",      mjPRESERVE},
-    {mjITEM_EDITNUM,   "重力",          2, opt->gravity,              "3"},
-    {mjITEM_EDITNUM,   "风",            2, opt->wind,                 "3"},
-    {mjITEM_EDITNUM,   "磁场",          2, opt->magnetic,             "3"},
-    {mjITEM_EDITNUM,   "密度",          2, &(opt->density),           "1"},
-    {mjITEM_EDITNUM,   "粘度",          2, &(opt->viscosity),         "1"},
+    {mjITEM_SEPARATOR, "Algorithmic Parameters", mjPRESERVE},
+    {mjITEM_EDITNUM,   "Timestep",      2, &(opt->timestep),          "1 0 1"},
+    {mjITEM_EDITINT,   "Iterations",    2, &(opt->iterations),        "1 0 1000"},
+    {mjITEM_EDITNUM,   "Tolerance",     2, &(opt->tolerance),         "1 0 1"},
+    {mjITEM_EDITINT,   "LS Iterations", 2, &(opt->ls_iterations),     "1 0 100"},
+    {mjITEM_EDITNUM,   "LS Tolerance",  2, &(opt->ls_tolerance),      "1 0 0.1"},
+    {mjITEM_EDITINT,   "Noslip Iterations", 2, &(opt->noslip_iterations), "1 0 1000"},
+    {mjITEM_EDITNUM,   "Noslip Tolerance",  2, &(opt->noslip_tolerance),  "1 0 1"},
+    {mjITEM_EDITINT,   "CCD Iterations", 2, &(opt->ccd_iterations),   "1 0 1000"},
+    {mjITEM_EDITNUM,   "CCD Tolerance", 2, &(opt->ccd_tolerance),     "1 0 1"},
+    {mjITEM_EDITNUM,   "Sleep Tolerance", 2, &(opt->sleep_tolerance), "1 0 1"},
+    {mjITEM_EDITINT,   "SDF Iterations", 2, &(opt->sdf_iterations),   "1 1 20"},
+    {mjITEM_EDITINT,   "SDF Init Points", 2, &(opt->sdf_initpoints),  "1 1 100"},
+    {mjITEM_SEPARATOR, "Physical Parameters", mjPRESERVE},
+    {mjITEM_EDITNUM,   "Gravity",       2, opt->gravity,              "3"},
+    {mjITEM_EDITNUM,   "Wind",          2, opt->wind,                 "3"},
+    {mjITEM_EDITNUM,   "Magnetic",      2, opt->magnetic,             "3"},
+    {mjITEM_EDITNUM,   "Density",       2, &(opt->density),           "1"},
+    {mjITEM_EDITNUM,   "Viscosity",     2, &(opt->viscosity),         "1"},
     {mjITEM_EDITNUM,   "Impratio",      2, &(opt->impratio),          "1"},
-    {mjITEM_SEPARATOR, "禁用标志",      mjPRESERVE},
+    {mjITEM_SEPARATOR, "Disable Flags", mjPRESERVE},
     {mjITEM_END}
   };
   mjuiDef defEnableFlags[] = {
-    {mjITEM_SEPARATOR, "启用标志", mjPRESERVE},
+    {mjITEM_SEPARATOR, "Enable Flags", mjPRESERVE},
     {mjITEM_END}
   };
   mjuiDef defOverride[] = {
-    {mjITEM_SEPARATOR, "接触参数覆盖",  mjPRESERVE},
-    {mjITEM_EDITNUM,   "边距",          2, &(opt->o_margin),          "1"},
-    {mjITEM_EDITNUM,   "求解阻抗",      2, &(opt->o_solimp),          "5"},
-    {mjITEM_EDITNUM,   "求解参考",      2, &(opt->o_solref),          "2"},
-    {mjITEM_EDITNUM,   "摩擦",          2, &(opt->o_friction),        "5"},
+    {mjITEM_SEPARATOR, "Contact Override", mjPRESERVE},
+    {mjITEM_EDITNUM,   "Margin",        2, &(opt->o_margin),          "1"},
+    {mjITEM_EDITNUM,   "Solimp",        2, &(opt->o_solimp),          "5"},
+    {mjITEM_EDITNUM,   "Solref",        2, &(opt->o_solref),          "2"},
+    {mjITEM_EDITNUM,   "Friction",      2, &(opt->o_friction),        "5"},
     {mjITEM_END}
   };
   mjuiDef defDisableActuator[] = {
@@ -938,13 +938,13 @@ void MakePhysicsSection(mj::Simulate* sim) {
     {mjITEM_END}
   };
   for (int i=0; i<mjNDISABLE; i++) {
-    mju::strcpy_arr(defFlag[0].name, TranslateUiName(mjDISABLESTRING[i]));
+    mju::strcpy_arr(defFlag[0].name, mjDISABLESTRING[i]);
     defFlag[0].pdata = sim->disable + i;
     mjui_add(&sim->ui0, defFlag);
   }
   mjui_add(&sim->ui0, defEnableFlags);
   for (int i=0; i<mjNENABLE; i++) {
-    mju::strcpy_arr(defFlag[0].name, TranslateUiName(mjENABLESTRING[i]));
+    mju::strcpy_arr(defFlag[0].name, mjENABLESTRING[i]);
     defFlag[0].pdata = sim->enable + i;
     mjui_add(&sim->ui0, defFlag);
   }
@@ -961,8 +961,8 @@ void MakePhysicsSection(mj::Simulate* sim) {
     // close less useful subsections
     if (it->type == mjITEM_SEPARATOR) {
       if (mju::strcmp_arr(it->name, "Actuator Group Enable") &&
-          mju::strcmp_arr(it->name, "接触参数覆盖")  &&
-          mju::strcmp_arr(it->name, "物理参数")) {
+          mju::strcmp_arr(it->name, "Contact Override")  &&
+          mju::strcmp_arr(it->name, "Physical Parameters")) {
         it->state = mjSEPCLOSED+1;
       }
     }
